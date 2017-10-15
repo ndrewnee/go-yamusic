@@ -36,6 +36,12 @@ if err != nil {
 
 ## Tests
 
+Running unit tests:
+
+```sh
+go test ./yamusic/
+```
+
 Running integration tests:
 
 ```sh

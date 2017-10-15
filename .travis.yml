@@ -12,6 +12,6 @@ before_install:
   - go get github.com/stretchr/testify
 script:
   - go test -v -race ./...
-  - go test -v -tags=integration -run=^$ ./test/integration # Check that integration test builds successfully, but don't run any of the tests (they hit live GitHub API).
+  - go test -v -tags=integration -run=^$ ./test/integration # Check that integration test builds successfully, but don't run any of the tests (they hit live Yandex.Music API).
   - go build ./yamusic/...
   - $GOPATH/bin/goveralls -service=travis-ci
