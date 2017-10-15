@@ -11,7 +11,7 @@ import (
 )
 
 func TestSearchArtists(t *testing.T) {
-	result, resp, err := client.Search.Artists(context.Background(), "Oxxymiron", nil)
+	result, resp, err := client.Search().Artists(context.Background(), "Oxxymiron", nil)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -20,7 +20,7 @@ func TestSearchArtists(t *testing.T) {
 }
 
 func TestSearchAlbums(t *testing.T) {
-	result, resp, err := client.Search.Albums(context.Background(), "Oxxymiron", nil)
+	result, resp, err := client.Search().Albums(context.Background(), "Oxxymiron", nil)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -29,7 +29,7 @@ func TestSearchAlbums(t *testing.T) {
 }
 
 func TestSearchTracks(t *testing.T) {
-	result, resp, err := client.Search.Tracks(context.Background(), "Oxxymiron", nil)
+	result, resp, err := client.Search().Tracks(context.Background(), "Oxxymiron", nil)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -38,7 +38,7 @@ func TestSearchTracks(t *testing.T) {
 }
 
 func TestSearchAll(t *testing.T) {
-	result, resp, err := client.Search.All(context.Background(), "Oxxymiron", nil)
+	result, resp, err := client.Search().All(context.Background(), "Oxxymiron", nil)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)

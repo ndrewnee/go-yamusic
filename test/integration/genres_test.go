@@ -11,7 +11,7 @@ import (
 )
 
 func TestGenresList(t *testing.T) {
-	genres, resp, err := client.Genres.List(context.Background())
+	genres, resp, err := client.Genres().List(context.Background())
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)

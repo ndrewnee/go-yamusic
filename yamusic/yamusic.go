@@ -9,8 +9,6 @@ import (
 	"net/url"
 )
 
-// TODO Add unit tests
-
 const (
 	apiURL = "https://api.music.yandex.net"
 )
@@ -24,10 +22,9 @@ type (
 		baseURL *url.URL
 		// Access token to Yandex.Music API
 		accessToken string
-
 		// Services
-		Genres *GenresService
-		Search *SearchService
+		genres *GenresService
+		search *SearchService
 	}
 )
 
@@ -45,8 +42,8 @@ func NewClient(options ...func(*Client)) *Client {
 		option(c)
 	}
 
-	c.Genres = &GenresService{client: c}
-	c.Search = &SearchService{client: c}
+	c.genres = &GenresService{client: c}
+	c.search = &SearchService{client: c}
 
 	return c
 }
@@ -135,4 +132,14 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*htt
 	}
 
 	return resp, err
+}
+
+// Genres returns genres service
+func (c *Client) Genres() *GenresService {
+	return c.genres
+}
+
+// Search returns genres service
+func (c *Client) Search() *SearchService {
+	return c.search
 }

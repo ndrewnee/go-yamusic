@@ -23,7 +23,7 @@ func TestGenresService_List(t *testing.T) {
 		fmt.Fprint(w, string(b))
 	})
 
-	result, _, err := client.Genres.List(context.Background())
+	result, _, err := client.Genres().List(context.Background())
 
 	assert.NoError(t, err)
 	assert.Equal(t, want, result)

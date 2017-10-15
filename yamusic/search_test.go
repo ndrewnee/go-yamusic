@@ -28,7 +28,7 @@ func TestSearchService_Artists(t *testing.T) {
 	})
 
 	opts := &SearchOptions{Page: 2, NoCorrect: true}
-	result, _, err := client.Search.Artists(context.Background(), "blah", opts)
+	result, _, err := client.Search().Artists(context.Background(), "blah", opts)
 	assert.NoError(t, err)
 	assert.Equal(t, want, result)
 }
@@ -51,7 +51,7 @@ func TestSearchService_Albums(t *testing.T) {
 	})
 
 	opts := &SearchOptions{Page: 2, NoCorrect: true}
-	result, _, err := client.Search.Albums(context.Background(), "blah", opts)
+	result, _, err := client.Search().Albums(context.Background(), "blah", opts)
 	assert.NoError(t, err)
 	assert.Equal(t, want, result)
 }
@@ -74,7 +74,7 @@ func TestSearchService_Tracks(t *testing.T) {
 	})
 
 	opts := &SearchOptions{Page: 2, NoCorrect: true}
-	result, _, err := client.Search.Tracks(context.Background(), "blah", opts)
+	result, _, err := client.Search().Tracks(context.Background(), "blah", opts)
 	assert.NoError(t, err)
 	assert.Equal(t, want, result)
 }
@@ -97,7 +97,7 @@ func TestSearchService_All(t *testing.T) {
 	})
 
 	opts := &SearchOptions{Page: 2, NoCorrect: true}
-	result, _, err := client.Search.All(context.Background(), "blah", opts)
+	result, _, err := client.Search().All(context.Background(), "blah", opts)
 	assert.NoError(t, err)
 	assert.Equal(t, want, result)
 }
