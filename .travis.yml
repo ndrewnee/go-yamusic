@@ -1,0 +1,17 @@
+language: go
+sudo: false
+go:
+  - 1.9.x
+  - 1.8.x
+  - 1.7.x
+  - tip
+  - master
+before_install:
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/mattn/goveralls
+  - go get github.com/stretchr/testify
+script:
+  - go test -v -race ./...
+  - go test -v -tags=integration -run=^$ ./test/integration # Check that integration test builds successfully, but don't run any of the tests (they hit live GitHub API).
+  - go build ./yamusic/...
+  - $GOPATH/bin/goveralls -service=travis-ci
