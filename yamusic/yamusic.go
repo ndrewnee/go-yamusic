@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -14,10 +15,14 @@ const (
 )
 
 type (
+	// Doer is an interface that can do http request
+	Doer interface {
+		Do(req *http.Request) (*http.Response, error)
+	}
 	// A Client manages communication with the Yandex.Music API.
 	Client struct {
 		// HTTP client used to communicate with the API.
-		client *http.Client
+		client Doer
 		// Base URL for API requests.
 		baseURL *url.URL
 		// Access token to Yandex.Music API
@@ -49,7 +54,7 @@ func NewClient(options ...func(*Client)) *Client {
 }
 
 // HTTPClient sets http client for Yandex.Music client
-func HTTPClient(httpClient *http.Client) func(*Client) {
+func HTTPClient(httpClient Doer) func(*Client) {
 	return func(c *Client) {
 		if httpClient != nil {
 			c.client = httpClient
@@ -80,7 +85,12 @@ func AccessToken(accessToken string) func(*Client) {
 // Relative URLs should always be specified without a preceding slash.  If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+func (c *Client) NewRequest(
+	method,
+	urlStr string,
+	body interface{},
+) (*http.Request, error) {
+
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
@@ -110,7 +120,12 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 // error if an API error has occurred.  If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
-func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
+func (c *Client) Do(
+	ctx context.Context,
+	req *http.Request,
+	v interface{},
+) (*http.Response, error) {
+
 	req = req.WithContext(ctx)
 
 	resp, err := c.client.Do(req)
@@ -118,11 +133,19 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*htt
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		closeErr := resp.Body.Close()
+		if closeErr != nil {
+			log.Println("close response body error: ", closeErr)
+		}
+	}()
 
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
-			io.Copy(w, resp.Body)
+			_, err = io.Copy(w, resp.Body)
+			if err != nil {
+				return nil, err
+			}
 		} else {
 			err = json.NewDecoder(resp.Body).Decode(v)
 			if err == io.EOF {

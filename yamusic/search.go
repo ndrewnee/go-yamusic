@@ -44,52 +44,8 @@ type (
 			MisspellResult    string `json:"misspellResult"`
 			MisspellOriginal  string `json:"misspellOriginal"`
 			Best              struct {
-				Type   string `json:"type"`
-				Result struct {
-					ID    int `json:"id"`
-					Cover struct {
-						Type   string `json:"type"`
-						Prefix string `json:"prefix"`
-						URI    string `json:"uri"`
-					} `json:"cover"`
-					Composer bool   `json:"composer"`
-					Various  bool   `json:"various"`
-					Name     string `json:"name"`
-					Counts   struct {
-						Tracks       int `json:"tracks"`
-						DirectAlbums int `json:"directAlbums"`
-						AlsoAlbums   int `json:"alsoAlbums"`
-						AlsoTracks   int `json:"alsoTracks"`
-					} `json:"counts"`
-					Genres           []string `json:"genres"`
-					TicketsAvailable bool     `json:"ticketsAvailable"`
-					PopularTracks    []struct {
-						ID             int  `json:"id"`
-						Available      bool `json:"available"`
-						AvailableAsRbt bool `json:"availableAsRbt"`
-						Albums         []struct {
-							ID            int           `json:"id"`
-							StorageDir    string        `json:"storageDir"`
-							Title         string        `json:"title"`
-							Artists       []interface{} `json:"artists"`
-							CoverURI      string        `json:"coverUri"`
-							TrackCount    int           `json:"trackCount"`
-							Genre         string        `json:"genre"`
-							Available     bool          `json:"available"`
-							TrackPosition struct {
-								Volume int `json:"volume"`
-								Index  int `json:"index"`
-							} `json:"trackPosition"`
-						} `json:"albums"`
-						StorageDir string        `json:"storageDir"`
-						DurationMs int           `json:"durationMs"`
-						Explicit   bool          `json:"explicit"`
-						Title      string        `json:"title"`
-						Artists    []interface{} `json:"artists"`
-						Regions    []string      `json:"regions"`
-					} `json:"popularTracks"`
-					Regions []string `json:"regions"`
-				} `json:"result"`
+				Type   string       `json:"type"`
+				Result SearchResult `json:"result"`
 			} `json:"best"`
 			Tracks struct {
 				Total   int `json:"total"`
@@ -158,53 +114,9 @@ type (
 				} `json:"results"`
 			} `json:"playlists"`
 			Artists struct {
-				Total   int `json:"total"`
-				PerPage int `json:"perPage"`
-				Results []struct {
-					ID    int `json:"id"`
-					Cover struct {
-						Type   string `json:"type"`
-						Prefix string `json:"prefix"`
-						URI    string `json:"uri"`
-					} `json:"cover"`
-					Composer bool   `json:"composer"`
-					Various  bool   `json:"various"`
-					Name     string `json:"name"`
-					Counts   struct {
-						Tracks       int `json:"tracks"`
-						DirectAlbums int `json:"directAlbums"`
-						AlsoAlbums   int `json:"alsoAlbums"`
-						AlsoTracks   int `json:"alsoTracks"`
-					} `json:"counts"`
-					Genres           []string `json:"genres"`
-					TicketsAvailable bool     `json:"ticketsAvailable"`
-					PopularTracks    []struct {
-						ID             int  `json:"id"`
-						Available      bool `json:"available"`
-						AvailableAsRbt bool `json:"availableAsRbt"`
-						Albums         []struct {
-							ID            int           `json:"id"`
-							StorageDir    string        `json:"storageDir"`
-							Title         string        `json:"title"`
-							Artists       []interface{} `json:"artists"`
-							CoverURI      string        `json:"coverUri"`
-							TrackCount    int           `json:"trackCount"`
-							Genre         string        `json:"genre"`
-							Available     bool          `json:"available"`
-							TrackPosition struct {
-								Volume int `json:"volume"`
-								Index  int `json:"index"`
-							} `json:"trackPosition"`
-						} `json:"albums"`
-						StorageDir string        `json:"storageDir"`
-						DurationMs int           `json:"durationMs"`
-						Explicit   bool          `json:"explicit"`
-						Title      string        `json:"title"`
-						Artists    []interface{} `json:"artists"`
-						Regions    []string      `json:"regions"`
-					} `json:"popularTracks"`
-					Regions []string `json:"regions"`
-				} `json:"results"`
+				Total   int            `json:"total"`
+				PerPage int            `json:"perPage"`
+				Results []SearchResult `json:"results"`
 			} `json:"artists"`
 			Videos struct {
 				Total   int `json:"total"`
@@ -249,37 +161,102 @@ type (
 			} `json:"albums"`
 		} `json:"result"`
 	}
+
+	// SearchResult search result json
+	SearchResult struct {
+		ID               int      `json:"id"`
+		Composer         bool     `json:"composer"`
+		Various          bool     `json:"various"`
+		TicketsAvailable bool     `json:"ticketsAvailable"`
+		Name             string   `json:"name"`
+		Genres           []string `json:"genres"`
+		Regions          []string `json:"regions"`
+		Cover            struct {
+			Type   string `json:"type"`
+			Prefix string `json:"prefix"`
+			URI    string `json:"uri"`
+		} `json:"cover"`
+		Counts struct {
+			Tracks       int `json:"tracks"`
+			DirectAlbums int `json:"directAlbums"`
+			AlsoAlbums   int `json:"alsoAlbums"`
+			AlsoTracks   int `json:"alsoTracks"`
+		} `json:"counts"`
+		PopularTracks []struct {
+			ID             int  `json:"id"`
+			Available      bool `json:"available"`
+			AvailableAsRbt bool `json:"availableAsRbt"`
+			Albums         []struct {
+				ID            int           `json:"id"`
+				StorageDir    string        `json:"storageDir"`
+				Title         string        `json:"title"`
+				Artists       []interface{} `json:"artists"`
+				CoverURI      string        `json:"coverUri"`
+				TrackCount    int           `json:"trackCount"`
+				Genre         string        `json:"genre"`
+				Available     bool          `json:"available"`
+				TrackPosition struct {
+					Volume int `json:"volume"`
+					Index  int `json:"index"`
+				} `json:"trackPosition"`
+			} `json:"albums"`
+			StorageDir string        `json:"storageDir"`
+			DurationMs int           `json:"durationMs"`
+			Explicit   bool          `json:"explicit"`
+			Title      string        `json:"title"`
+			Artists    []interface{} `json:"artists"`
+			Regions    []string      `json:"regions"`
+		} `json:"popularTracks"`
+	}
 )
 
 // Artists searches artists by query
-func (s *SearchService) Artists(ctx context.Context, query string, opts *SearchOptions) (*Search, *http.Response, error) {
-	result := new(Search)
-	resp, err := s.search(ctx, searchTypeArtist, query, opts, result)
-	return result, resp, err
+func (s *SearchService) Artists(
+	ctx context.Context,
+	query string,
+	opts *SearchOptions,
+) (*Search, *http.Response, error) {
+
+	return s.search(ctx, searchTypeArtist, query, opts)
 }
 
 // Tracks searches tracks by query
-func (s *SearchService) Tracks(ctx context.Context, query string, opts *SearchOptions) (*Search, *http.Response, error) {
-	result := new(Search)
-	resp, err := s.search(ctx, searchTypeTrack, query, opts, result)
-	return result, resp, err
+func (s *SearchService) Tracks(
+	ctx context.Context,
+	query string,
+	opts *SearchOptions,
+) (*Search, *http.Response, error) {
+
+	return s.search(ctx, searchTypeTrack, query, opts)
 }
 
 // Albums searches albums by query
-func (s *SearchService) Albums(ctx context.Context, query string, opts *SearchOptions) (*Search, *http.Response, error) {
-	result := new(Search)
-	resp, err := s.search(ctx, searchTypeAlbum, query, opts, result)
-	return result, resp, err
+func (s *SearchService) Albums(
+	ctx context.Context,
+	query string,
+	opts *SearchOptions,
+) (*Search, *http.Response, error) {
+
+	return s.search(ctx, searchTypeAlbum, query, opts)
 }
 
 // All searches all(artists, albums, tracks) by query
-func (s *SearchService) All(ctx context.Context, query string, opts *SearchOptions) (*Search, *http.Response, error) {
-	result := new(Search)
-	resp, err := s.search(ctx, searchTypeAll, query, opts, result)
-	return result, resp, err
+func (s *SearchService) All(
+	ctx context.Context,
+	query string,
+	opts *SearchOptions,
+) (*Search, *http.Response, error) {
+
+	return s.search(ctx, searchTypeAll, query, opts)
 }
 
-func (s *SearchService) search(ctx context.Context, searchTyp searchType, query string, opts *SearchOptions, result interface{}) (*http.Response, error) {
+func (s *SearchService) search(
+	ctx context.Context,
+	searchTyp searchType,
+	query string,
+	opts *SearchOptions,
+) (*Search, *http.Response, error) {
+
 	if opts == nil {
 		opts = &SearchOptions{}
 	}
@@ -295,8 +272,10 @@ func (s *SearchService) search(ctx context.Context, searchTyp searchType, query 
 
 	req, err := s.client.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return s.client.Do(ctx, req, result)
+	result := new(Search)
+	resp, err := s.client.Do(ctx, req, result)
+	return result, resp, err
 }

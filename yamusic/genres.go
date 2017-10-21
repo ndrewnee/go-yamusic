@@ -95,7 +95,10 @@ type (
 )
 
 // List returns list of existed genres.
-func (s *GenresService) List(ctx context.Context) (*Genres, *http.Response, error) {
+func (s *GenresService) List(
+	ctx context.Context,
+) (*Genres, *http.Response, error) {
+
 	req, err := s.client.NewRequest(http.MethodGet, "genres", nil)
 	if err != nil {
 		return nil, nil, err
