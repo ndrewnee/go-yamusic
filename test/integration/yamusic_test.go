@@ -4,6 +4,7 @@ package integration
 
 import (
 	"github.com/ndrewnee/go-yamusic/yamusic"
+	"os"
 )
 
 var (
@@ -11,5 +12,6 @@ var (
 )
 
 func init() {
-	client = yamusic.NewClient()
+	accessToken := os.Getenv("YANDEX_ACCESS_TOKEN")
+	client = yamusic.NewClient(yamusic.AccessToken(accessToken))
 }

@@ -19,12 +19,15 @@ type (
 			ExecDurationMillis string `json:"exec-duration-millis"`
 		} `json:"invocationInfo"`
 		Result []struct {
-			ID          string `json:"id"`
 			Weight      int    `json:"weight"`
-			ComposerTop bool   `json:"composerTop"`
 			TracksCount int    `json:"tracksCount"`
+			ComposerTop bool   `json:"composerTop"`
+			ShowInMenu  bool   `json:"showInMenu"`
+			ID          string `json:"id"`
 			Title       string `json:"title"`
 			FullTitle   string `json:"fullTitle,omitempty"`
+			URLPart     string `json:"urlPart,omitempty"`
+			Color       string `json:"color,omitempty"`
 			Titles      struct {
 				Kk struct {
 					Title string `json:"title"`
@@ -46,21 +49,20 @@ type (
 			} `json:"titles"`
 			Images struct {
 			} `json:"images"`
-			ShowInMenu bool   `json:"showInMenu"`
-			URLPart    string `json:"urlPart,omitempty"`
-			Color      string `json:"color,omitempty"`
-			RadioIcon  struct {
+			RadioIcon struct {
 				BackgroundColor string `json:"backgroundColor"`
 				ImageURL        string `json:"imageUrl"`
 			} `json:"radioIcon,omitempty"`
 			SubGenres []struct {
-				ID          string `json:"id"`
 				Weight      int    `json:"weight"`
-				ComposerTop bool   `json:"composerTop"`
-				URLPart     string `json:"urlPart"`
 				TracksCount int    `json:"tracksCount"`
+				ComposerTop bool   `json:"composerTop"`
+				ShowInMenu  bool   `json:"showInMenu"`
+				URLPart     string `json:"urlPart"`
+				ID          string `json:"id"`
 				Title       string `json:"title"`
 				FullTitle   string `json:"fullTitle,omitempty"`
+				Color       string `json:"color"`
 				Titles      struct {
 					En struct {
 						Title     string `json:"title"`
@@ -79,13 +81,11 @@ type (
 						FullTitle string `json:"fullTitle"`
 					} `json:"ru"`
 				} `json:"titles"`
-				Color  string `json:"color"`
 				Images struct {
 					Two08X208   string `json:"208x208"`
 					Three00X300 string `json:"300x300"`
 				} `json:"images"`
-				ShowInMenu bool `json:"showInMenu"`
-				RadioIcon  struct {
+				RadioIcon struct {
 					BackgroundColor string `json:"backgroundColor"`
 					ImageURL        string `json:"imageUrl"`
 				} `json:"radioIcon"`
@@ -104,11 +104,7 @@ func (s *GenresService) List(
 		return nil, nil, err
 	}
 
-	var genres = new(Genres)
+	genres := new(Genres)
 	resp, err := s.client.Do(ctx, req, genres)
-	if err != nil {
-		return nil, resp, err
-	}
-
 	return genres, resp, err
 }

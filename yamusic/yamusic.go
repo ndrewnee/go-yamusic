@@ -28,8 +28,11 @@ type (
 		// Access token to Yandex.Music API
 		accessToken string
 		// Services
-		genres *GenresService
-		search *SearchService
+		genres    *GenresService
+		search    *SearchService
+		account   *AccountService
+		feed      *FeedService
+		playlists *PlaylistsService
 	}
 )
 
@@ -49,6 +52,9 @@ func NewClient(options ...func(*Client)) *Client {
 
 	c.genres = &GenresService{client: c}
 	c.search = &SearchService{client: c}
+	c.account = &AccountService{client: c}
+	c.feed = &FeedService{client: c}
+	c.playlists = &PlaylistsService{client: c}
 
 	return c
 }
@@ -165,4 +171,19 @@ func (c *Client) Genres() *GenresService {
 // Search returns genres service
 func (c *Client) Search() *SearchService {
 	return c.search
+}
+
+// Account returns account service
+func (c *Client) Account() *AccountService {
+	return c.account
+}
+
+// Feed returns feed service
+func (c *Client) Feed() *FeedService {
+	return c.feed
+}
+
+// Playlists returns feed service
+func (c *Client) Playlists() *PlaylistsService {
+	return c.playlists
 }

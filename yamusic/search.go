@@ -51,9 +51,15 @@ type (
 				Total   int `json:"total"`
 				PerPage int `json:"perPage"`
 				Results []struct {
-					ID             int  `json:"id"`
-					Available      bool `json:"available"`
-					AvailableAsRbt bool `json:"availableAsRbt"`
+					ID             int      `json:"id"`
+					DurationMs     int      `json:"durationMs"`
+					Available      bool     `json:"available"`
+					AvailableAsRbt bool     `json:"availableAsRbt"`
+					Explicit       bool     `json:"explicit"`
+					StorageDir     string   `json:"storageDir"`
+					Title          string   `json:"title"`
+					Version        string   `json:"version,omitempty"`
+					Regions        []string `json:"regions"`
 					Albums         []struct {
 						ID                  int           `json:"id"`
 						StorageDir          string        `json:"storageDir"`
@@ -70,11 +76,7 @@ type (
 							Index  int `json:"index"`
 						} `json:"trackPosition"`
 					} `json:"albums"`
-					StorageDir string `json:"storageDir"`
-					DurationMs int    `json:"durationMs"`
-					Explicit   bool   `json:"explicit"`
-					Title      string `json:"title"`
-					Artists    []struct {
+					Artists []struct {
 						ID    int `json:"id"`
 						Cover struct {
 							Type   string `json:"type"`
@@ -86,8 +88,6 @@ type (
 						Name       string        `json:"name"`
 						Decomposed []interface{} `json:"decomposed"`
 					} `json:"artists"`
-					Regions []string `json:"regions"`
-					Version string   `json:"version,omitempty"`
 				} `json:"results"`
 			} `json:"tracks"`
 			Playlists struct {
@@ -183,9 +183,15 @@ type (
 			AlsoTracks   int `json:"alsoTracks"`
 		} `json:"counts"`
 		PopularTracks []struct {
-			ID             int  `json:"id"`
-			Available      bool `json:"available"`
-			AvailableAsRbt bool `json:"availableAsRbt"`
+			ID             int           `json:"id"`
+			DurationMs     int           `json:"durationMs"`
+			Available      bool          `json:"available"`
+			AvailableAsRbt bool          `json:"availableAsRbt"`
+			Explicit       bool          `json:"explicit"`
+			StorageDir     string        `json:"storageDir"`
+			Title          string        `json:"title"`
+			Regions        []string      `json:"regions"`
+			Artists        []interface{} `json:"artists"`
 			Albums         []struct {
 				ID            int           `json:"id"`
 				StorageDir    string        `json:"storageDir"`
@@ -200,12 +206,6 @@ type (
 					Index  int `json:"index"`
 				} `json:"trackPosition"`
 			} `json:"albums"`
-			StorageDir string        `json:"storageDir"`
-			DurationMs int           `json:"durationMs"`
-			Explicit   bool          `json:"explicit"`
-			Title      string        `json:"title"`
-			Artists    []interface{} `json:"artists"`
-			Regions    []string      `json:"regions"`
 		} `json:"popularTracks"`
 	}
 )
@@ -261,12 +261,11 @@ func (s *SearchService) search(
 		opts = &SearchOptions{}
 	}
 
-	queryParams := url.Values{
-		"type":      []string{string(searchTyp)},
-		"text":      []string{query},
-		"page":      []string{strconv.Itoa(opts.Page)},
-		"nocorrect": []string{strconv.FormatBool(opts.NoCorrect)},
-	}
+	queryParams := url.Values{}
+	queryParams.Set("type", string(searchTyp))
+	queryParams.Set("text", query)
+	queryParams.Set("page", strconv.Itoa(opts.Page))
+	queryParams.Set("nocorrect", strconv.FormatBool(opts.NoCorrect))
 
 	uri := fmt.Sprintf("search?%v", queryParams.Encode())
 

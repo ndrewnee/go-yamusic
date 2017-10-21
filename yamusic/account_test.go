@@ -10,20 +10,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenresService_List(t *testing.T) {
+func TestAccountService_GetStatus(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &Genres{}
-	want.InvocationInfo.ReqID = "Genres.List"
+	want := &AccountStatus{}
+	want.InvocationInfo.ReqID = "Account.GetStatus"
 
-	mux.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/account/status", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
 		b, _ := json.Marshal(want)
 		fmt.Fprint(w, string(b))
 	})
 
-	result, _, err := client.Genres().List(context.Background())
+	result, _, err := client.Account().GetStatus(context.Background())
 
 	assert.NoError(t, err)
 	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)

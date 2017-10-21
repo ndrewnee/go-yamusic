@@ -46,7 +46,7 @@ func testSearch(t *testing.T, searchType string, searchFunc func(
 		assert.Equal(t, http.MethodGet, r.Method)
 		assert.Equal(t,
 			"/search?nocorrect=true&page=2&text=blah&type="+searchType,
-			r.RequestURI)
+			r.URL.String())
 
 		b, _ := json.Marshal(want)
 		fmt.Fprint(w, string(b))
@@ -55,5 +55,5 @@ func testSearch(t *testing.T, searchType string, searchFunc func(
 	opts := &SearchOptions{Page: 2, NoCorrect: true}
 	result, _, err := searchFunc(context.Background(), "blah", opts)
 	assert.NoError(t, err)
-	assert.Equal(t, want, result)
+	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)
 }
