@@ -246,6 +246,49 @@ type (
 			} `json:"cover"`
 		} `json:"result"`
 	}
+	// PlaylistsCreate describes method create playlist response
+	PlaylistsCreate struct {
+		InvocationInfo struct {
+			Hostname           string `json:"hostname"`
+			ReqID              string `json:"req-id"`
+			ExecDurationMillis string `json:"exec-duration-millis"`
+		} `json:"invocationInfo"`
+		Result struct {
+			UID        int           `json:"uid"`
+			Kind       int           `json:"kind"`
+			DurationMs int           `json:"durationMs"`
+			Revision   int           `json:"revision"`
+			TrackCount int           `json:"trackCount"`
+			Collective bool          `json:"collective"`
+			Available  bool          `json:"available"`
+			IsBanner   bool          `json:"isBanner"`
+			IsPremiere bool          `json:"isPremiere"`
+			Title      string        `json:"title"`
+			Visibility string        `json:"visibility"`
+			OgImage    string        `json:"ogImage"`
+			Tags       []interface{} `json:"tags"`
+			Created    time.Time     `json:"created"`
+			Modified   time.Time     `json:"modified"`
+			Owner      struct {
+				UID      int    `json:"uid"`
+				Login    string `json:"login"`
+				Name     string `json:"name"`
+				Verified bool   `json:"verified"`
+			} `json:"owner"`
+			Cover struct {
+				Error string `json:"error"`
+			} `json:"cover"`
+		} `json:"result"`
+	}
+	// PlaylistsDelete describes method delete playlist response
+	PlaylistsDelete struct {
+		InvocationInfo struct {
+			Hostname           string `json:"hostname"`
+			ReqID              string `json:"req-id"`
+			ExecDurationMillis string `json:"exec-duration-millis"`
+		} `json:"invocationInfo"`
+		Result string `json:"result"`
+	}
 )
 
 // List returns playlists of the user
@@ -347,4 +390,53 @@ func (s *PlaylistsService) Rename(
 	renamedPlaylist := new(PlaylistsRename)
 	resp, err := s.client.Do(ctx, req, renamedPlaylist)
 	return renamedPlaylist, resp, err
+}
+
+// Create creates playlist for current user
+func (s *PlaylistsService) Create(
+	ctx context.Context,
+	title string,
+	isPublic bool,
+) (*PlaylistsCreate, *http.Response, error) {
+
+	var visibility string
+	if isPublic {
+		visibility = "public"
+	} else {
+		visibility = "private"
+	}
+
+	form := url.Values{}
+	form.Set("title", title)
+	form.Set("visibility", visibility)
+
+	uri := fmt.Sprintf("users/%v/playlists/create", s.client.userID)
+
+	req, err := s.client.NewRequest(http.MethodPost, uri, form)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	createdPlaylist := new(PlaylistsCreate)
+	resp, err := s.client.Do(ctx, req, createdPlaylist)
+	return createdPlaylist, resp, err
+}
+
+// Delete deletes playlist for current user
+func (s *PlaylistsService) Delete(
+	ctx context.Context,
+	kind int,
+) (*PlaylistsDelete, *http.Response, error) {
+
+	uri := fmt.Sprintf("users/%v/playlists/%v/delete", s.client.userID, kind)
+	req, err := s.client.NewRequest(http.MethodPost, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	deletedPlaylist := new(PlaylistsDelete)
+	resp, err := s.client.Do(ctx, req, deletedPlaylist)
+	return deletedPlaylist, resp, err
 }

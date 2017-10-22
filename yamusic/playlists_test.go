@@ -130,3 +130,67 @@ func TestPlaylistsService_Rename(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)
 }
+
+func TestPlaylistsService_Create(t *testing.T) {
+	setup()
+	defer teardown()
+
+	want := &PlaylistsCreate{}
+	want.InvocationInfo.ReqID = "Playlists.Create"
+
+	title := "title"
+
+	mux.HandleFunc(
+		fmt.Sprintf("/users/%v/playlists/create", userID),
+		func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, http.MethodPost, r.Method)
+
+			err := r.ParseForm()
+			assert.NoError(t, err)
+			assert.Equal(t, title, r.FormValue("title"))
+			assert.Equal(t, "public", r.FormValue("visibility"))
+			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
+
+			b, _ := json.Marshal(want)
+			fmt.Fprint(w, string(b))
+		},
+	)
+
+	result, _, err := client.Playlists().Create(
+		context.Background(),
+		title,
+		true,
+	)
+
+	assert.NoError(t, err)
+	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)
+}
+
+func TestPlaylistsService_Delete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	want := &PlaylistsDelete{}
+	want.InvocationInfo.ReqID = "Playlists.Delete"
+
+	kind := 1004
+
+	mux.HandleFunc(
+		fmt.Sprintf("/users/%v/playlists/%v/delete", userID, kind),
+		func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, http.MethodPost, r.Method)
+			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
+
+			b, _ := json.Marshal(want)
+			fmt.Fprint(w, string(b))
+		},
+	)
+
+	result, _, err := client.Playlists().Delete(
+		context.Background(),
+		kind,
+	)
+
+	assert.NoError(t, err)
+	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)
+}

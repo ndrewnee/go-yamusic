@@ -8,7 +8,11 @@
 
 ## Description
 
-Unofficial Go client library for [Yandex.Music API](https://music.yandex.ru)
+Unofficial Go client library for [Yandex.Music API](https://music.yandex.ru).
+
+Golang fork of [Node.js library](https://github.com/itsmepetrov/yandex-music-api).
+
+Client style based on [google/go-github](https://github.com/google/go-github).
 
 ## Usage
 

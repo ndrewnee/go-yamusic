@@ -65,3 +65,33 @@ func TestPlaylistsRename(t *testing.T) {
 	assert.NotZero(t, playlist)
 	assert.NotZero(t, playlist.Result)
 }
+
+func TestPlaylists_Create_Delete(t *testing.T) {
+	var kind int
+	t.Run("Create playlist", func(t *testing.T) {
+		playlist, resp, err := client.Playlists().Create(
+			context.Background(),
+			"New playlist",
+			true,
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.NotZero(t, playlist)
+		assert.NotZero(t, playlist.Result)
+
+		kind = playlist.Result.Kind
+	})
+
+	t.Run("Delete playlist", func(t *testing.T) {
+		playlist, resp, err := client.Playlists().Delete(
+			context.Background(),
+			kind,
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.NotZero(t, playlist)
+		assert.NotZero(t, playlist.Result)
+	})
+}
