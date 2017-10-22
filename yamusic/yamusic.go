@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const (
@@ -27,6 +28,7 @@ type (
 		baseURL *url.URL
 		// Access token to Yandex.Music API
 		accessToken string
+		userID      int
 		// Services
 		genres    *GenresService
 		search    *SearchService
@@ -77,9 +79,13 @@ func BaseURL(baseURL *url.URL) func(*Client) {
 	}
 }
 
-// AccessToken sets access token for Yandex.Music client
-func AccessToken(accessToken string) func(*Client) {
+// AccessToken sets user_id and access token for Yandex.Music client
+func AccessToken(userID int, accessToken string) func(*Client) {
 	return func(c *Client) {
+		if userID != 0 {
+			c.userID = userID
+		}
+
 		if accessToken != "" {
 			c.accessToken = accessToken
 		}
@@ -104,20 +110,28 @@ func (c *Client) NewRequest(
 
 	u := c.baseURL.ResolveReference(rel)
 
-	var buf io.ReadWriter
+	var reader io.Reader
 	if body != nil {
-		buf = new(bytes.Buffer)
-		err = json.NewEncoder(buf).Encode(body)
-		if err != nil {
-			return nil, err
+		switch v := body.(type) {
+		case url.Values:
+			reader = strings.NewReader(v.Encode())
+		default:
+			buf := new(bytes.Buffer)
+			err = json.NewEncoder(buf).Encode(body)
+			if err != nil {
+				return nil, err
+			}
+
+			reader = buf
 		}
 	}
 
-	req, err := http.NewRequest(method, u.String(), buf)
+	req, err := http.NewRequest(method, u.String(), reader)
 	if err != nil {
 		return nil, err
 	}
 
+	req.Header.Set("Authorization", "OAuth "+c.accessToken)
 	return req, nil
 }
 

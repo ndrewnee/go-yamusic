@@ -19,6 +19,7 @@ func TestFeedService_Get(t *testing.T) {
 
 	mux.HandleFunc("/feed", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 		b, _ := json.Marshal(want)
 		fmt.Fprint(w, string(b))
 	})

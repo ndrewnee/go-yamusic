@@ -212,6 +212,40 @@ type (
 			} `json:"tracks"`
 		} `json:"result"`
 	}
+
+	// PlaylistsRename describes method rename playlist response
+	PlaylistsRename struct {
+		InvocationInfo struct {
+			Hostname           string `json:"hostname"`
+			ReqID              string `json:"req-id"`
+			ExecDurationMillis string `json:"exec-duration-millis"`
+		} `json:"invocationInfo"`
+		Result struct {
+			UID        int       `json:"uid"`
+			Kind       int       `json:"kind"`
+			Revision   int       `json:"revision"`
+			TrackCount int       `json:"trackCount"`
+			DurationMs int       `json:"durationMs"`
+			Collective bool      `json:"collective"`
+			Available  bool      `json:"available"`
+			IsBanner   bool      `json:"isBanner"`
+			IsPremiere bool      `json:"isPremiere"`
+			OgImage    string    `json:"ogImage"`
+			Title      string    `json:"title"`
+			Visibility string    `json:"visibility"`
+			Created    time.Time `json:"created"`
+			Modified   time.Time `json:"modified"`
+			Owner      struct {
+				UID      int    `json:"uid"`
+				Login    string `json:"login"`
+				Name     string `json:"name"`
+				Verified bool   `json:"verified"`
+			} `json:"owner"`
+			Cover struct {
+				Error string `json:"error"`
+			} `json:"cover"`
+		} `json:"result"`
+	}
 )
 
 // List returns playlists of the user
@@ -231,7 +265,7 @@ func (s *PlaylistsService) List(
 	return playlists, resp, err
 }
 
-// Get returns playlists of the user
+// Get returns playlist of the user by kind
 func (s *PlaylistsService) Get(
 	ctx context.Context,
 	userID int,
@@ -258,7 +292,7 @@ type (
 	}
 )
 
-// GetByKinds returns playlists of the user
+// GetByKinds returns several playlists by kinds with track ids
 func (s *PlaylistsService) GetByKinds(
 	ctx context.Context,
 	userID int,
@@ -289,4 +323,28 @@ func (s *PlaylistsService) GetByKinds(
 	playlists := new(PlaylistsGetByKinds)
 	resp, err := s.client.Do(ctx, req, playlists)
 	return playlists, resp, err
+}
+
+// Rename renames playlist of current user
+func (s *PlaylistsService) Rename(
+	ctx context.Context,
+	kind int,
+	newName string,
+) (*PlaylistsRename, *http.Response, error) {
+
+	uri := fmt.Sprintf("users/%v/playlists/%v/name", s.client.userID, kind)
+
+	form := url.Values{}
+	form.Set("value", newName)
+
+	req, err := s.client.NewRequest(http.MethodPost, uri, form)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	renamedPlaylist := new(PlaylistsRename)
+	resp, err := s.client.Do(ctx, req, renamedPlaylist)
+	return renamedPlaylist, resp, err
 }

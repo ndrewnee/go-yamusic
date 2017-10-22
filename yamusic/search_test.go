@@ -44,6 +44,7 @@ func testSearch(t *testing.T, searchType string, searchFunc func(
 
 	mux.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 		assert.Equal(t,
 			"/search?nocorrect=true&page=2&text=blah&type="+searchType,
 			r.URL.String())

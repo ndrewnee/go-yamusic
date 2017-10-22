@@ -52,3 +52,16 @@ func TestPlaylistsGetByKinds(t *testing.T) {
 	assert.NotZero(t, playlists)
 	assert.NotEmpty(t, playlists.Result)
 }
+
+func TestPlaylistsRename(t *testing.T) {
+	playlist, resp, err := client.Playlists().Rename(
+		context.Background(),
+		1004,
+		"New name",
+	)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.NotZero(t, playlist)
+	assert.NotZero(t, playlist.Result)
+}

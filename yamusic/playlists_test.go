@@ -21,6 +21,7 @@ func TestPlaylistsService_List(t *testing.T) {
 		"/users/1000/playlists/list",
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
+			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 			b, _ := json.Marshal(want)
 			fmt.Fprint(w, string(b))
 		},
@@ -43,6 +44,7 @@ func TestPlaylistsService_Get(t *testing.T) {
 		"/users/1000/playlists/2000",
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
+			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 			b, _ := json.Marshal(want)
 			fmt.Fprint(w, string(b))
 		},
@@ -69,6 +71,7 @@ func TestPlaylistsService_GetByKinds(t *testing.T) {
 		"/users/1000/playlists",
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
+			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 			assert.Equal(
 				t,
 				"/users/1000/playlists?kinds=101%2C102&mixed=true&rich-tracks=true",
@@ -87,6 +90,41 @@ func TestPlaylistsService_GetByKinds(t *testing.T) {
 			Mixed:      true,
 			RichTracks: true,
 		},
+	)
+
+	assert.NoError(t, err)
+	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)
+}
+
+func TestPlaylistsService_Rename(t *testing.T) {
+	setup()
+	defer teardown()
+
+	want := &PlaylistsRename{}
+	want.InvocationInfo.ReqID = "Playlists.Rename"
+
+	kind := 1004
+	newValue := "newValue"
+
+	mux.HandleFunc(
+		fmt.Sprintf("/users/%v/playlists/%v/name", userID, kind),
+		func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, http.MethodPost, r.Method)
+
+			err := r.ParseForm()
+			assert.NoError(t, err)
+			assert.Equal(t, newValue, r.FormValue("value"))
+			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
+
+			b, _ := json.Marshal(want)
+			fmt.Fprint(w, string(b))
+		},
+	)
+
+	result, _, err := client.Playlists().Rename(
+		context.Background(),
+		kind,
+		newValue,
 	)
 
 	assert.NoError(t, err)
