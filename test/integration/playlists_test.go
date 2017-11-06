@@ -11,62 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPlaylistsList(t *testing.T) {
-	playlists, resp, err := client.Playlists().List(
-		context.Background(),
-		495301201,
-	)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.NotZero(t, playlists)
-	assert.NotEmpty(t, playlists.Result)
-}
-
-func TestPlaylistsGet(t *testing.T) {
-	playlist, resp, err := client.Playlists().Get(
-		context.Background(),
-		495301201,
-		101,
-	)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.NotZero(t, playlist)
-	assert.NotZero(t, playlist.Result)
-}
-
-func TestPlaylistsGetByKinds(t *testing.T) {
-	playlists, resp, err := client.Playlists().GetByKinds(
-		context.Background(),
-		495301201,
-		&yamusic.PlaylistsGetByKindOptions{
-			Kinds:      []int{101, 1004},
-			Mixed:      false,
-			RichTracks: false,
-		},
-	)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.NotZero(t, playlists)
-	assert.NotEmpty(t, playlists.Result)
-}
-
-func TestPlaylistsRename(t *testing.T) {
-	playlist, resp, err := client.Playlists().Rename(
-		context.Background(),
-		1004,
-		"New name",
-	)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.NotZero(t, playlist)
-	assert.NotZero(t, playlist.Result)
-}
-
-func TestPlaylists_Create_Delete(t *testing.T) {
+func TestPlaylists(t *testing.T) {
 	var kind int
 	t.Run("Create playlist", func(t *testing.T) {
 		playlist, resp, err := client.Playlists().Create(
@@ -81,6 +26,106 @@ func TestPlaylists_Create_Delete(t *testing.T) {
 		assert.NotZero(t, playlist.Result)
 
 		kind = playlist.Result.Kind
+	})
+
+	t.Run("Rename playlist", func(t *testing.T) {
+		playlist, resp, err := client.Playlists().Rename(
+			context.Background(),
+			kind,
+			"New name",
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.NotZero(t, playlist)
+		assert.NotZero(t, playlist.Result)
+	})
+
+	t.Run("Get list of playlists", func(t *testing.T) {
+		playlists, resp, err := client.Playlists().List(
+			context.Background(),
+			client.UserID(),
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.NotZero(t, playlists)
+		assert.NotEmpty(t, playlists.Result)
+	})
+
+	var revision int
+	t.Run("Get one playlist by kind", func(t *testing.T) {
+		playlist, resp, err := client.Playlists().Get(
+			context.Background(),
+			client.UserID(),
+			kind,
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.NotZero(t, playlist)
+		assert.NotZero(t, playlist.Result)
+
+		revision = playlist.Result.Revision
+	})
+
+	t.Run("Add tracks to playlist", func(t *testing.T) {
+		playlist, resp, err := client.Playlists().AddTracks(
+			context.Background(),
+			kind,
+			revision,
+			[]yamusic.PlaylistsTrack{
+				{
+					ID:      232419,
+					AlbumID: 42206,
+				},
+			},
+			nil,
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.NotZero(t, playlist)
+		assert.NotZero(t, playlist.Result)
+
+		revision = playlist.Result.Revision
+	})
+
+	t.Run("Remove tracks from playlist", func(t *testing.T) {
+		playlist, resp, err := client.Playlists().RemoveTracks(
+			context.Background(),
+			kind,
+			revision,
+			[]yamusic.PlaylistsTrack{
+				{
+					ID:      232419,
+					AlbumID: 42206,
+				},
+			},
+			nil,
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.NotZero(t, playlist)
+		assert.NotZero(t, playlist.Result)
+	})
+
+	t.Run("Get playlists by kinds", func(t *testing.T) {
+		playlists, resp, err := client.Playlists().GetByKinds(
+			context.Background(),
+			client.UserID(),
+			&yamusic.PlaylistsGetByKindOptions{
+				Kinds:      []int{kind},
+				Mixed:      false,
+				RichTracks: false,
+			},
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.NotZero(t, playlists)
+		assert.NotEmpty(t, playlists.Result)
 	})
 
 	t.Run("Delete playlist", func(t *testing.T) {

@@ -14,7 +14,7 @@ func TestFeedService_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &Feed{}
+	want := &FeedResp{}
 	want.InvocationInfo.ReqID = "Feed.Get"
 
 	mux.HandleFunc("/feed", func(w http.ResponseWriter, r *http.Request) {

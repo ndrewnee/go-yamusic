@@ -11,14 +11,11 @@ type (
 		client *Client
 	}
 
-	// Genres describes genres method response.
-	Genres struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result []struct {
+	// GenresListResp describes genres method response.
+	GenresListResp struct {
+		InvocationInfo InvocationInfo `json:"invocationInfo"`
+		Error          Error          `json:"error"`
+		Result         []struct {
 			Weight      int    `json:"weight"`
 			TracksCount int    `json:"tracksCount"`
 			ComposerTop bool   `json:"composerTop"`
@@ -97,14 +94,14 @@ type (
 // List returns list of existed genres.
 func (s *GenresService) List(
 	ctx context.Context,
-) (*Genres, *http.Response, error) {
+) (*GenresListResp, *http.Response, error) {
 
 	req, err := s.client.NewRequest(http.MethodGet, "genres", nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	genres := new(Genres)
+	genres := new(GenresListResp)
 	resp, err := s.client.Do(ctx, req, genres)
 	return genres, resp, err
 }

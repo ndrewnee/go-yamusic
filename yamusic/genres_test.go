@@ -14,7 +14,7 @@ func TestGenresService_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &Genres{}
+	want := &GenresListResp{}
 	want.InvocationInfo.ReqID = "Genres.List"
 
 	mux.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {

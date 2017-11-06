@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,11 +15,11 @@ func TestPlaylistsService_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &PlaylistsList{}
+	want := &PlaylistsListResp{}
 	want.InvocationInfo.ReqID = "Playlists.List"
 
 	mux.HandleFunc(
-		"/users/1000/playlists/list",
+		fmt.Sprintf("/users/%v/playlists/list", client.UserID()),
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
@@ -27,7 +28,7 @@ func TestPlaylistsService_List(t *testing.T) {
 		},
 	)
 
-	result, _, err := client.Playlists().List(context.Background(), 1000)
+	result, _, err := client.Playlists().List(context.Background(), 0)
 
 	assert.NoError(t, err)
 	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)
@@ -37,11 +38,13 @@ func TestPlaylistsService_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &PlaylistsGet{}
+	want := &PlaylistsGetResp{}
 	want.InvocationInfo.ReqID = "Playlists.Get"
 
+	kind := 2000
+
 	mux.HandleFunc(
-		"/users/1000/playlists/2000",
+		fmt.Sprintf("/users/%v/playlists/%v", client.UserID(), kind),
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
@@ -52,8 +55,8 @@ func TestPlaylistsService_Get(t *testing.T) {
 
 	result, _, err := client.Playlists().Get(
 		context.Background(),
-		1000,
-		2000,
+		0,
+		kind,
 	)
 
 	assert.NoError(t, err)
@@ -67,14 +70,26 @@ func TestPlaylistsService_GetByKinds(t *testing.T) {
 	want := &PlaylistsGetByKinds{}
 	want.InvocationInfo.ReqID = "Playlists.GetByKinds"
 
+	kind1 := 101
+	kind2 := 102
+	mixed := true
+	richTracks := true
+
 	mux.HandleFunc(
-		"/users/1000/playlists",
+		fmt.Sprintf("/users/%v/playlists", client.UserID()),
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 			assert.Equal(
 				t,
-				"/users/1000/playlists?kinds=101%2C102&mixed=true&rich-tracks=true",
+				fmt.Sprintf(
+					"/users/%v/playlists?kinds=%v%%2C%v&mixed=%v&rich-tracks=%v",
+					client.UserID(),
+					kind1,
+					kind2,
+					mixed,
+					richTracks,
+				),
 				r.URL.String(),
 			)
 			b, _ := json.Marshal(want)
@@ -84,11 +99,11 @@ func TestPlaylistsService_GetByKinds(t *testing.T) {
 
 	result, _, err := client.Playlists().GetByKinds(
 		context.Background(),
-		1000,
+		0,
 		&PlaylistsGetByKindOptions{
-			Kinds:      []int{101, 102},
-			Mixed:      true,
-			RichTracks: true,
+			Kinds:      []int{kind1, kind2},
+			Mixed:      mixed,
+			RichTracks: richTracks,
 		},
 	)
 
@@ -100,7 +115,7 @@ func TestPlaylistsService_Rename(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &PlaylistsRename{}
+	want := &PlaylistsRenameResp{}
 	want.InvocationInfo.ReqID = "Playlists.Rename"
 
 	kind := 1004
@@ -135,7 +150,7 @@ func TestPlaylistsService_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &PlaylistsCreate{}
+	want := &PlaylistsCreateResp{}
 	want.InvocationInfo.ReqID = "Playlists.Create"
 
 	title := "title"
@@ -170,7 +185,7 @@ func TestPlaylistsService_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &PlaylistsDelete{}
+	want := &PlaylistsDeleteResp{}
 	want.InvocationInfo.ReqID = "Playlists.Delete"
 
 	kind := 1004
@@ -189,6 +204,110 @@ func TestPlaylistsService_Delete(t *testing.T) {
 	result, _, err := client.Playlists().Delete(
 		context.Background(),
 		kind,
+	)
+
+	assert.NoError(t, err)
+	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)
+}
+
+func TestPlaylistsService_AddTracks(t *testing.T) {
+	setup()
+	defer teardown()
+
+	want := &PlaylistsAddTracksResp{}
+	want.InvocationInfo.ReqID = "Playlists.AddTracks"
+
+	revision := 1
+	kind := 1004
+	trackID := 1
+	albumID := 1
+
+	mux.HandleFunc(
+		fmt.Sprintf("/users/%v/playlists/%v/change-relative", userID, kind),
+		func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, http.MethodPost, r.Method)
+
+			err := r.ParseForm()
+			assert.NoError(t, err)
+
+			diff := fmt.Sprintf(
+				`[{"op":"insert","at":0,"tracks":[{"id":%v,"albumId":%v}]}]`,
+				trackID,
+				albumID,
+			)
+
+			assert.Equal(t, diff, r.FormValue("diff"))
+			assert.Equal(t, strconv.Itoa(revision), r.FormValue("revision"))
+			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
+
+			b, _ := json.Marshal(want)
+			fmt.Fprint(w, string(b))
+		},
+	)
+
+	result, _, err := client.Playlists().AddTracks(
+		context.Background(),
+		kind,
+		revision,
+		[]PlaylistsTrack{
+			{
+				ID:      trackID,
+				AlbumID: albumID,
+			},
+		},
+		nil,
+	)
+
+	assert.NoError(t, err)
+	assert.Equal(t, want.InvocationInfo.ReqID, result.InvocationInfo.ReqID)
+}
+
+func TestPlaylistsService_RemoveTracks(t *testing.T) {
+	setup()
+	defer teardown()
+
+	want := &PlaylistsRemoveTracksResp{}
+	want.InvocationInfo.ReqID = "Playlists.RemoveTracks"
+
+	revision := 1
+	kind := 1004
+	trackID := 1
+	albumID := 1
+
+	mux.HandleFunc(
+		fmt.Sprintf("/users/%v/playlists/%v/change-relative", userID, kind),
+		func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, http.MethodPost, r.Method)
+
+			err := r.ParseForm()
+			assert.NoError(t, err)
+
+			diff := fmt.Sprintf(
+				`[{"op":"delete","from":0,"to":1,"tracks":[{"id":%v,"albumId":%v}]}]`,
+				trackID,
+				albumID,
+			)
+
+			assert.Equal(t, diff, r.FormValue("diff"))
+			assert.Equal(t, strconv.Itoa(revision), r.FormValue("revision"))
+			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
+
+			b, _ := json.Marshal(want)
+			fmt.Fprint(w, string(b))
+		},
+	)
+
+	result, _, err := client.Playlists().RemoveTracks(
+		context.Background(),
+		kind,
+		revision,
+		[]PlaylistsTrack{
+			{
+				ID:      trackID,
+				AlbumID: albumID,
+			},
+		},
+		nil,
 	)
 
 	assert.NoError(t, err)

@@ -96,7 +96,9 @@ func AccessToken(userID int, accessToken string) func(*Client) {
 // in which case it is resolved relative to the BaseURL of the Client.
 // Relative URLs should always be specified without a preceding slash.  If
 // specified, the value pointed to by body is JSON encoded and included as the
-// request body.
+// request body, except when body is url.Values. If it is url.Values, it is
+// encoded as application/x-www-form-urlencoded and included in request
+// headers.
 func (c *Client) NewRequest(
 	method,
 	urlStr string,
@@ -111,10 +113,12 @@ func (c *Client) NewRequest(
 	u := c.baseURL.ResolveReference(rel)
 
 	var reader io.Reader
+	var isForm bool
 	if body != nil {
 		switch v := body.(type) {
 		case url.Values:
 			reader = strings.NewReader(v.Encode())
+			isForm = true
 		default:
 			buf := new(bytes.Buffer)
 			err = json.NewEncoder(buf).Encode(body)
@@ -132,6 +136,10 @@ func (c *Client) NewRequest(
 	}
 
 	req.Header.Set("Authorization", "OAuth "+c.accessToken)
+	if isForm && method == http.MethodPost {
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	}
+
 	return req, nil
 }
 
@@ -177,6 +185,11 @@ func (c *Client) Do(
 	return resp, err
 }
 
+// UserID returns id of authorized user. If wasn't authorized returns 0.
+func (c *Client) UserID() int {
+	return c.userID
+}
+
 // Genres returns genres service
 func (c *Client) Genres() *GenresService {
 	return c.genres
@@ -201,3 +214,19 @@ func (c *Client) Feed() *FeedService {
 func (c *Client) Playlists() *PlaylistsService {
 	return c.playlists
 }
+
+// General types
+type (
+	// InvocationInfo is base info in all requests
+	InvocationInfo struct {
+		Hostname string `json:"hostname"`
+		ReqID    string `json:"req-id"`
+		// ExecDurationMillis sometimes int, sometimes string so saving raw
+		ExecDurationMillis json.RawMessage `json:"exec-duration-millis"`
+	}
+	// Error is struct with error type and message.
+	Error struct {
+		Name    string `json:"name"`
+		Message string `json:"message"`
+	}
+)

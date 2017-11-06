@@ -2,6 +2,7 @@ package yamusic
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -16,79 +17,18 @@ type (
 		client *Client
 	}
 
-	// PlaylistsList describes get user's playlists response
-	PlaylistsList struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result []struct {
-			UID        int           `json:"uid"`
-			Kind       int           `json:"kind"`
-			DurationMs int           `json:"durationMs"`
-			Revision   int           `json:"revision"`
-			TrackCount int           `json:"trackCount"`
-			Collective bool          `json:"collective"`
-			Available  bool          `json:"available"`
-			IsBanner   bool          `json:"isBanner"`
-			IsPremiere bool          `json:"isPremiere"`
-			Title      string        `json:"title"`
-			Visibility string        `json:"visibility"`
-			OgImage    string        `json:"ogImage"`
-			Created    time.Time     `json:"created"`
-			Modified   time.Time     `json:"modified"`
-			Tags       []interface{} `json:"tags"`
-			Owner      struct {
-				UID      int    `json:"uid"`
-				Login    string `json:"login"`
-				Name     string `json:"name"`
-				Verified bool   `json:"verified"`
-			} `json:"owner"`
-			Cover struct {
-				Type     string   `json:"type"`
-				ItemsURI []string `json:"itemsUri"`
-				Custom   bool     `json:"custom"`
-			} `json:"cover"`
-		} `json:"result"`
+	// PlaylistsListResp describes get user's playlists response
+	PlaylistsListResp struct {
+		InvocationInfo InvocationInfo    `json:"invocationInfo"`
+		Error          Error             `json:"error"`
+		Result         []PlaylistsResult `json:"result"`
 	}
-	// PlaylistsGet describes get user's playlist by kind response
-	PlaylistsGet struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result struct {
-			UID        int           `json:"uid"`
-			Kind       int           `json:"kind"`
-			Revision   int           `json:"revision"`
-			TrackCount int           `json:"trackCount"`
-			DurationMs int           `json:"durationMs"`
-			LikesCount int           `json:"likesCount"`
-			Collective bool          `json:"collective"`
-			Available  bool          `json:"available"`
-			IsBanner   bool          `json:"isBanner"`
-			IsPremiere bool          `json:"isPremiere"`
-			Title      string        `json:"title"`
-			OgImage    string        `json:"ogImage"`
-			Visibility string        `json:"visibility"`
-			Created    time.Time     `json:"created"`
-			Modified   time.Time     `json:"modified"`
-			Tags       []interface{} `json:"tags"`
-			Owner      struct {
-				UID      int    `json:"uid"`
-				Login    string `json:"login"`
-				Name     string `json:"name"`
-				Verified bool   `json:"verified"`
-			} `json:"owner"`
-			Cover struct {
-				Type    string `json:"type"`
-				Dir     string `json:"dir"`
-				Version string `json:"version"`
-				URI     string `json:"uri"`
-				Custom  bool   `json:"custom"`
-			} `json:"cover"`
+	// PlaylistsGetResp describes get user's playlist by kind response
+	PlaylistsGetResp struct {
+		InvocationInfo InvocationInfo `json:"invocationInfo"`
+		Error          Error          `json:"error"`
+		Result         struct {
+			PlaylistsResult
 			Tracks []struct {
 				ID        int       `json:"id"`
 				Timestamp time.Time `json:"timestamp"`
@@ -171,40 +111,10 @@ type (
 	}
 	// PlaylistsGetByKinds describes get user's playlists by kinds response
 	PlaylistsGetByKinds struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result []struct {
-			UID        int           `json:"uid"`
-			Kind       int           `json:"kind"`
-			Revision   int           `json:"revision"`
-			TrackCount int           `json:"trackCount"`
-			DurationMs int           `json:"durationMs"`
-			Collective bool          `json:"collective"`
-			Available  bool          `json:"available"`
-			IsBanner   bool          `json:"isBanner"`
-			IsPremiere bool          `json:"isPremiere"`
-			Visibility string        `json:"visibility"`
-			Title      string        `json:"title"`
-			OgImage    string        `json:"ogImage"`
-			Created    time.Time     `json:"created"`
-			Modified   time.Time     `json:"modified"`
-			Tags       []interface{} `json:"tags"`
-			Owner      struct {
-				UID      int    `json:"uid"`
-				Login    string `json:"login"`
-				Name     string `json:"name"`
-				Verified bool   `json:"verified"`
-			} `json:"owner"`
-			Cover struct {
-				Type    string `json:"type"`
-				Dir     string `json:"dir"`
-				Version string `json:"version"`
-				URI     string `json:"uri"`
-				Custom  bool   `json:"custom"`
-			} `json:"cover"`
+		InvocationInfo InvocationInfo `json:"invocationInfo"`
+		Error          Error          `json:"error"`
+		Result         []struct {
+			PlaylistsResult
 			Tracks []struct {
 				ID        int       `json:"id"`
 				AlbumID   int       `json:"albumId"`
@@ -213,81 +123,92 @@ type (
 		} `json:"result"`
 	}
 
-	// PlaylistsRename describes method rename playlist response
-	PlaylistsRename struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result struct {
-			UID        int       `json:"uid"`
-			Kind       int       `json:"kind"`
-			Revision   int       `json:"revision"`
-			TrackCount int       `json:"trackCount"`
-			DurationMs int       `json:"durationMs"`
-			Collective bool      `json:"collective"`
-			Available  bool      `json:"available"`
-			IsBanner   bool      `json:"isBanner"`
-			IsPremiere bool      `json:"isPremiere"`
-			OgImage    string    `json:"ogImage"`
-			Title      string    `json:"title"`
-			Visibility string    `json:"visibility"`
-			Created    time.Time `json:"created"`
-			Modified   time.Time `json:"modified"`
-			Owner      struct {
-				UID      int    `json:"uid"`
-				Login    string `json:"login"`
-				Name     string `json:"name"`
-				Verified bool   `json:"verified"`
-			} `json:"owner"`
-			Cover struct {
-				Error string `json:"error"`
-			} `json:"cover"`
-		} `json:"result"`
+	// PlaylistsRenameResp describes method rename playlist response
+	PlaylistsRenameResp struct {
+		InvocationInfo InvocationInfo  `json:"invocationInfo"`
+		Error          Error           `json:"error"`
+		Result         PlaylistsResult `json:"result"`
 	}
-	// PlaylistsCreate describes method create playlist response
-	PlaylistsCreate struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result struct {
-			UID        int           `json:"uid"`
-			Kind       int           `json:"kind"`
-			DurationMs int           `json:"durationMs"`
-			Revision   int           `json:"revision"`
-			TrackCount int           `json:"trackCount"`
-			Collective bool          `json:"collective"`
-			Available  bool          `json:"available"`
-			IsBanner   bool          `json:"isBanner"`
-			IsPremiere bool          `json:"isPremiere"`
-			Title      string        `json:"title"`
-			Visibility string        `json:"visibility"`
-			OgImage    string        `json:"ogImage"`
-			Tags       []interface{} `json:"tags"`
-			Created    time.Time     `json:"created"`
-			Modified   time.Time     `json:"modified"`
-			Owner      struct {
-				UID      int    `json:"uid"`
-				Login    string `json:"login"`
-				Name     string `json:"name"`
-				Verified bool   `json:"verified"`
-			} `json:"owner"`
-			Cover struct {
-				Error string `json:"error"`
-			} `json:"cover"`
-		} `json:"result"`
+	// PlaylistsCreateResp describes method create playlist response
+	PlaylistsCreateResp struct {
+		InvocationInfo InvocationInfo  `json:"invocationInfo"`
+		Error          Error           `json:"error"`
+		Result         PlaylistsResult `json:"result"`
 	}
-	// PlaylistsDelete describes method delete playlist response
-	PlaylistsDelete struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result string `json:"result"`
+	// PlaylistsDeleteResp describes method delete playlist response
+	PlaylistsDeleteResp struct {
+		InvocationInfo InvocationInfo `json:"invocationInfo"`
+		Error          Error          `json:"error"`
+		Result         string         `json:"result"`
+	}
+	// PlaylistsAddTracksResp describes method add tracks response
+	PlaylistsAddTracksResp struct {
+		InvocationInfo InvocationInfo  `json:"invocationInfo"`
+		Error          Error           `json:"error"`
+		Result         PlaylistsResult `json:"result"`
+	}
+	// PlaylistsRemoveTracksResp describes method add tracks response
+	PlaylistsRemoveTracksResp struct {
+		InvocationInfo InvocationInfo  `json:"invocationInfo"`
+		Error          Error           `json:"error"`
+		Result         PlaylistsResult `json:"result"`
+	}
+	// PlaylistsResult is base result of methods AddTracks and RemoveTracks
+	PlaylistsResult struct {
+		UID                int            `json:"uid"`
+		Kind               int            `json:"kind"`
+		Revision           int            `json:"revision"`
+		TrackCount         int            `json:"trackCount"`
+		DurationMs         int            `json:"durationMs"`
+		Collective         bool           `json:"collective"`
+		Available          bool           `json:"available"`
+		IsBanner           bool           `json:"isBanner"`
+		IsPremiere         bool           `json:"isPremiere"`
+		Title              string         `json:"title"`
+		Visibility         string         `json:"visibility"`
+		OgImage            string         `json:"ogImage"`
+		Created            time.Time      `json:"created"`
+		Modified           time.Time      `json:"modified"`
+		Cover              PlaylistsCover `json:"cover"`
+		Owner              PlaylistsOwner `json:"owner"`
+		Tags               []interface{}  `json:"tags"`
+		LastOwnerPlaylists []struct {
+			UID        int            `json:"uid"`
+			Kind       int            `json:"kind"`
+			Revision   int            `json:"revision"`
+			TrackCount int            `json:"trackCount"`
+			DurationMs int            `json:"durationMs"`
+			Collective bool           `json:"collective"`
+			Available  bool           `json:"available"`
+			IsBanner   bool           `json:"isBanner"`
+			IsPremiere bool           `json:"isPremiere"`
+			Title      string         `json:"title"`
+			Visibility string         `json:"visibility"`
+			OgImage    string         `json:"ogImage"`
+			Created    time.Time      `json:"created"`
+			Modified   time.Time      `json:"modified"`
+			Tags       []interface{}  `json:"tags"`
+			Owner      PlaylistsOwner `json:"owner"`
+			Cover      PlaylistsCover `json:"cover"`
+		} `json:"lastOwnerPlaylists"`
+	}
+	// PlaylistsCover is cover of playlist response
+	PlaylistsCover struct {
+		Error    string   `json:"error"`
+		Type     string   `json:"type"`
+		ItemsURI []string `json:"itemsUri"`
+		Custom   bool     `json:"custom"`
+		Dir      string   `json:"dir"`
+		Version  string   `json:"version"`
+		URI      string   `json:"uri"`
+	}
+	// PlaylistsOwner is owner of playlist response
+	PlaylistsOwner struct {
+		UID      int    `json:"uid"`
+		Login    string `json:"login"`
+		Name     string `json:"name"`
+		Sex      string `json:"sex"`
+		Verified bool   `json:"verified"`
 	}
 )
 
@@ -295,7 +216,10 @@ type (
 func (s *PlaylistsService) List(
 	ctx context.Context,
 	userID int,
-) (*PlaylistsList, *http.Response, error) {
+) (*PlaylistsListResp, *http.Response, error) {
+	if userID == 0 {
+		userID = s.client.userID
+	}
 
 	uri := fmt.Sprintf("users/%v/playlists/list", userID)
 	req, err := s.client.NewRequest(http.MethodGet, uri, nil)
@@ -303,7 +227,7 @@ func (s *PlaylistsService) List(
 		return nil, nil, err
 	}
 
-	playlists := new(PlaylistsList)
+	playlists := new(PlaylistsListResp)
 	resp, err := s.client.Do(ctx, req, playlists)
 	return playlists, resp, err
 }
@@ -313,7 +237,10 @@ func (s *PlaylistsService) Get(
 	ctx context.Context,
 	userID int,
 	kind int,
-) (*PlaylistsGet, *http.Response, error) {
+) (*PlaylistsGetResp, *http.Response, error) {
+	if userID == 0 {
+		userID = s.client.userID
+	}
 
 	uri := fmt.Sprintf("users/%v/playlists/%v", userID, kind)
 	req, err := s.client.NewRequest(http.MethodGet, uri, nil)
@@ -321,7 +248,7 @@ func (s *PlaylistsService) Get(
 		return nil, nil, err
 	}
 
-	playlist := new(PlaylistsGet)
+	playlist := new(PlaylistsGetResp)
 	resp, err := s.client.Do(ctx, req, playlist)
 	return playlist, resp, err
 }
@@ -341,6 +268,9 @@ func (s *PlaylistsService) GetByKinds(
 	userID int,
 	opts *PlaylistsGetByKindOptions,
 ) (*PlaylistsGetByKinds, *http.Response, error) {
+	if userID == 0 {
+		userID = s.client.userID
+	}
 
 	if opts == nil {
 		opts = &PlaylistsGetByKindOptions{}
@@ -373,7 +303,7 @@ func (s *PlaylistsService) Rename(
 	ctx context.Context,
 	kind int,
 	newName string,
-) (*PlaylistsRename, *http.Response, error) {
+) (*PlaylistsRenameResp, *http.Response, error) {
 
 	uri := fmt.Sprintf("users/%v/playlists/%v/name", s.client.userID, kind)
 
@@ -387,7 +317,7 @@ func (s *PlaylistsService) Rename(
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	renamedPlaylist := new(PlaylistsRename)
+	renamedPlaylist := new(PlaylistsRenameResp)
 	resp, err := s.client.Do(ctx, req, renamedPlaylist)
 	return renamedPlaylist, resp, err
 }
@@ -397,7 +327,7 @@ func (s *PlaylistsService) Create(
 	ctx context.Context,
 	title string,
 	isPublic bool,
-) (*PlaylistsCreate, *http.Response, error) {
+) (*PlaylistsCreateResp, *http.Response, error) {
 
 	var visibility string
 	if isPublic {
@@ -417,9 +347,7 @@ func (s *PlaylistsService) Create(
 		return nil, nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	createdPlaylist := new(PlaylistsCreate)
+	createdPlaylist := new(PlaylistsCreateResp)
 	resp, err := s.client.Do(ctx, req, createdPlaylist)
 	return createdPlaylist, resp, err
 }
@@ -428,7 +356,7 @@ func (s *PlaylistsService) Create(
 func (s *PlaylistsService) Delete(
 	ctx context.Context,
 	kind int,
-) (*PlaylistsDelete, *http.Response, error) {
+) (*PlaylistsDeleteResp, *http.Response, error) {
 
 	uri := fmt.Sprintf("users/%v/playlists/%v/delete", s.client.userID, kind)
 	req, err := s.client.NewRequest(http.MethodPost, uri, nil)
@@ -436,7 +364,133 @@ func (s *PlaylistsService) Delete(
 		return nil, nil, err
 	}
 
-	deletedPlaylist := new(PlaylistsDelete)
+	deletedPlaylist := new(PlaylistsDeleteResp)
 	resp, err := s.client.Do(ctx, req, deletedPlaylist)
 	return deletedPlaylist, resp, err
+}
+
+type (
+	// PlaylistsTrack is track object with trackId and albumId
+	// that is used in add tracks and remove tracks requests
+	PlaylistsTrack struct {
+		ID      int `json:"id"`
+		AlbumID int `json:"albumId"`
+	}
+	// PlaylistsAddTracksOptions are options for method AddTracks
+	PlaylistsAddTracksOptions struct {
+		At int
+	}
+)
+
+// AddTracks adds tracks to playlist
+func (s *PlaylistsService) AddTracks(
+	ctx context.Context,
+	kind int,
+	revision int,
+	tracks []PlaylistsTrack,
+	opts *PlaylistsAddTracksOptions,
+) (*PlaylistsAddTracksResp, *http.Response, error) {
+	if opts == nil {
+		opts = &PlaylistsAddTracksOptions{
+			At: 0,
+		}
+	}
+
+	diff := []struct {
+		Op     string           `json:"op"`
+		At     int              `json:"at"`
+		Tracks []PlaylistsTrack `json:"tracks"`
+	}{
+		{
+			Op:     "insert",
+			At:     opts.At,
+			Tracks: tracks,
+		},
+	}
+
+	b, err := json.Marshal(diff)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	form := url.Values{}
+	form.Set("diff", string(b))
+	form.Set("revision", strconv.Itoa(revision))
+
+	uri := fmt.Sprintf(
+		"users/%v/playlists/%v/change-relative",
+		s.client.userID,
+		kind,
+	)
+
+	req, err := s.client.NewRequest(http.MethodPost, uri, form)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	addTracksResp := new(PlaylistsAddTracksResp)
+	resp, err := s.client.Do(ctx, req, addTracksResp)
+	return addTracksResp, resp, err
+}
+
+type (
+	// PlaylistsRemoveTracksOptions are options for method RemoveTracks
+	PlaylistsRemoveTracksOptions struct {
+		From int
+		To   int
+	}
+)
+
+// RemoveTracks removes tracks from playlist
+func (s *PlaylistsService) RemoveTracks(
+	ctx context.Context,
+	kind int,
+	revision int,
+	tracks []PlaylistsTrack,
+	opts *PlaylistsRemoveTracksOptions,
+) (*PlaylistsRemoveTracksResp, *http.Response, error) {
+	if opts == nil {
+		opts = &PlaylistsRemoveTracksOptions{
+			From: 0,
+			To:   len(tracks),
+		}
+	}
+
+	diff := []struct {
+		Op     string           `json:"op"`
+		From   int              `json:"from"`
+		To     int              `json:"to"`
+		Tracks []PlaylistsTrack `json:"tracks"`
+	}{
+		{
+			Op:     "delete",
+			From:   opts.From,
+			To:     opts.To,
+			Tracks: tracks,
+		},
+	}
+
+	b, err := json.Marshal(diff)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	form := url.Values{}
+	form.Set("diff", string(b))
+	form.Set("revision", strconv.Itoa(revision))
+
+	uri := fmt.Sprintf(
+		"users/%v/playlists/%v/change-relative",
+		s.client.userID,
+		kind,
+	)
+
+	req, err := s.client.NewRequest(http.MethodPost, uri, form)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	addTracksResp := new(PlaylistsRemoveTracksResp)
+	resp, err := s.client.Do(ctx, req, addTracksResp)
+	return addTracksResp, resp, err
 }

@@ -12,14 +12,11 @@ type (
 		client *Client
 	}
 
-	// Feed describes get feed method response
-	Feed struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result struct {
+	// FeedResp describes get feed method response
+	FeedResp struct {
+		InvocationInfo InvocationInfo `json:"invocationInfo"`
+		Error          Error          `json:"error"`
+		Result         struct {
 			CanGetMoreEvents   bool          `json:"canGetMoreEvents"`
 			Pumpkin            bool          `json:"pumpkin"`
 			Today              string        `json:"today"`
@@ -370,14 +367,14 @@ type (
 // Get returns feed of current user or base feed if there is no access token
 func (s *FeedService) Get(
 	ctx context.Context,
-) (*Feed, *http.Response, error) {
+) (*FeedResp, *http.Response, error) {
 
 	req, err := s.client.NewRequest(http.MethodGet, "feed", nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	feed := new(Feed)
+	feed := new(FeedResp)
 	resp, err := s.client.Do(ctx, req, feed)
 	return feed, resp, err
 }

@@ -14,7 +14,7 @@ func TestAccountService_GetStatus(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &AccountStatus{}
+	want := &AccountStatusResp{}
 	want.InvocationInfo.ReqID = "Account.GetStatus"
 
 	mux.HandleFunc("/account/status", func(w http.ResponseWriter, r *http.Request) {

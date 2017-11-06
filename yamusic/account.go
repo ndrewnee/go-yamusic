@@ -11,14 +11,11 @@ type (
 	AccountService struct {
 		client *Client
 	}
-	// AccountStatus describes account get status method response
-	AccountStatus struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result struct {
+	// AccountStatusResp describes account get status method response
+	AccountStatusResp struct {
+		InvocationInfo InvocationInfo `json:"invocationInfo"`
+		Error          Error          `json:"error"`
+		Result         struct {
 			Account struct {
 				UID              int       `json:"uid"`
 				Region           int       `json:"region"`
@@ -52,14 +49,14 @@ type (
 // GetStatus returns account's status
 func (s *AccountService) GetStatus(
 	ctx context.Context,
-) (*AccountStatus, *http.Response, error) {
+) (*AccountStatusResp, *http.Response, error) {
 
 	req, err := s.client.NewRequest(http.MethodGet, "account/status", nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	accountStatus := new(AccountStatus)
+	accountStatus := new(AccountStatusResp)
 	resp, err := s.client.Do(ctx, req, accountStatus)
 	return accountStatus, resp, err
 }

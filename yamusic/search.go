@@ -29,14 +29,11 @@ type (
 		Page      int
 		NoCorrect bool
 	}
-	// Search describes search method response.
-	Search struct {
-		InvocationInfo struct {
-			Hostname           string `json:"hostname"`
-			ReqID              string `json:"req-id"`
-			ExecDurationMillis string `json:"exec-duration-millis"`
-		} `json:"invocationInfo"`
-		Result struct {
+	// SearchResp describes search method response.
+	SearchResp struct {
+		InvocationInfo InvocationInfo `json:"invocationInfo"`
+		Error          Error          `json:"error"`
+		Result         struct {
 			MisspellCorrected bool   `json:"misspellCorrected"`
 			Nocorrect         bool   `json:"nocorrect"`
 			SearchRequestID   string `json:"searchRequestId"`
@@ -215,7 +212,7 @@ func (s *SearchService) Artists(
 	ctx context.Context,
 	query string,
 	opts *SearchOptions,
-) (*Search, *http.Response, error) {
+) (*SearchResp, *http.Response, error) {
 
 	return s.search(ctx, searchTypeArtist, query, opts)
 }
@@ -225,7 +222,7 @@ func (s *SearchService) Tracks(
 	ctx context.Context,
 	query string,
 	opts *SearchOptions,
-) (*Search, *http.Response, error) {
+) (*SearchResp, *http.Response, error) {
 
 	return s.search(ctx, searchTypeTrack, query, opts)
 }
@@ -235,7 +232,7 @@ func (s *SearchService) Albums(
 	ctx context.Context,
 	query string,
 	opts *SearchOptions,
-) (*Search, *http.Response, error) {
+) (*SearchResp, *http.Response, error) {
 
 	return s.search(ctx, searchTypeAlbum, query, opts)
 }
@@ -245,7 +242,7 @@ func (s *SearchService) All(
 	ctx context.Context,
 	query string,
 	opts *SearchOptions,
-) (*Search, *http.Response, error) {
+) (*SearchResp, *http.Response, error) {
 
 	return s.search(ctx, searchTypeAll, query, opts)
 }
@@ -255,7 +252,7 @@ func (s *SearchService) search(
 	searchTyp searchType,
 	query string,
 	opts *SearchOptions,
-) (*Search, *http.Response, error) {
+) (*SearchResp, *http.Response, error) {
 
 	if opts == nil {
 		opts = &SearchOptions{}
@@ -274,7 +271,7 @@ func (s *SearchService) search(
 		return nil, nil, err
 	}
 
-	result := new(Search)
+	result := new(SearchResp)
 	resp, err := s.client.Do(ctx, req, result)
 	return result, resp, err
 }

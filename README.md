@@ -26,13 +26,13 @@ Construct a new Yandex.Music client, then use the various services on the client
 client := yamusic.NewClient()
 
 // list all genres
-genres, _, err := client.Genres.List(context.Background())
+genres, _, err := client.Genres().List(context.Background())
 if err != nil {
     log.Fatal(err)
 }
 
 // search for artists
-artists, _, err := client.Search.Artists(context.Background(), "Oxxymiron", nil)
+artists, _, err := client.Search().Artists(context.Background(), "Oxxymiron", nil)
 if err != nil {
     log.Fatal(err)
 }
