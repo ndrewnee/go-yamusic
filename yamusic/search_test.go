@@ -49,7 +49,8 @@ func testSearch(t *testing.T, searchType string, searchFunc func(
 			"/search?nocorrect=true&page=2&text=blah&type="+searchType,
 			r.URL.String())
 
-		b, _ := json.Marshal(want)
+		b, err := json.Marshal(want)
+		assert.NoError(t, err)
 		fmt.Fprint(w, string(b))
 	})
 

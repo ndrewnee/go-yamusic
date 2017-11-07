@@ -23,7 +23,8 @@ func TestPlaylistsService_List(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
-			b, _ := json.Marshal(want)
+			b, err := json.Marshal(want)
+			assert.NoError(t, err)
 			fmt.Fprint(w, string(b))
 		},
 	)
@@ -48,7 +49,8 @@ func TestPlaylistsService_Get(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
-			b, _ := json.Marshal(want)
+			b, err := json.Marshal(want)
+			assert.NoError(t, err)
 			fmt.Fprint(w, string(b))
 		},
 	)
@@ -92,7 +94,8 @@ func TestPlaylistsService_GetByKinds(t *testing.T) {
 				),
 				r.URL.String(),
 			)
-			b, _ := json.Marshal(want)
+			b, err := json.Marshal(want)
+			assert.NoError(t, err)
 			fmt.Fprint(w, string(b))
 		},
 	)
@@ -131,7 +134,8 @@ func TestPlaylistsService_Rename(t *testing.T) {
 			assert.Equal(t, newValue, r.FormValue("value"))
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 
-			b, _ := json.Marshal(want)
+			b, err := json.Marshal(want)
+			assert.NoError(t, err)
 			fmt.Fprint(w, string(b))
 		},
 	)
@@ -166,7 +170,8 @@ func TestPlaylistsService_Create(t *testing.T) {
 			assert.Equal(t, "public", r.FormValue("visibility"))
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 
-			b, _ := json.Marshal(want)
+			b, err := json.Marshal(want)
+			assert.NoError(t, err)
 			fmt.Fprint(w, string(b))
 		},
 	)
@@ -196,7 +201,8 @@ func TestPlaylistsService_Delete(t *testing.T) {
 			assert.Equal(t, http.MethodPost, r.Method)
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 
-			b, _ := json.Marshal(want)
+			b, err := json.Marshal(want)
+			assert.NoError(t, err)
 			fmt.Fprint(w, string(b))
 		},
 	)
@@ -240,7 +246,8 @@ func TestPlaylistsService_AddTracks(t *testing.T) {
 			assert.Equal(t, strconv.Itoa(revision), r.FormValue("revision"))
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 
-			b, _ := json.Marshal(want)
+			b, err := json.Marshal(want)
+			assert.NoError(t, err)
 			fmt.Fprint(w, string(b))
 		},
 	)
@@ -292,7 +299,8 @@ func TestPlaylistsService_RemoveTracks(t *testing.T) {
 			assert.Equal(t, strconv.Itoa(revision), r.FormValue("revision"))
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
 
-			b, _ := json.Marshal(want)
+			b, err := json.Marshal(want)
+			assert.NoError(t, err)
 			fmt.Fprint(w, string(b))
 		},
 	)

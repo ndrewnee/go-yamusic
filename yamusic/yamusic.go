@@ -221,8 +221,8 @@ type (
 	InvocationInfo struct {
 		Hostname string `json:"hostname"`
 		ReqID    string `json:"req-id"`
-		// ExecDurationMillis sometimes int, sometimes string so saving raw
-		ExecDurationMillis json.RawMessage `json:"exec-duration-millis"`
+		// ExecDurationMillis sometimes int, sometimes string so saving interface{}
+		ExecDurationMillis interface{} `json:"exec-duration-millis"`
 	}
 	// Error is struct with error type and message.
 	Error struct {
