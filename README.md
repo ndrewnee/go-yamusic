@@ -20,21 +20,43 @@ Client style based on [google/go-github](https://github.com/google/go-github).
 import "github.com/ndrewnee/go-yamusic/yamusic"
 ```
 
-Construct a new Yandex.Music client, then use the various services on the client to access different parts of the Yandex.Music API. For example:
+Construct a new Yandex.Music client, then use the various services on the client to access different parts of the Yandex.Music API.
+
+Using [functional options for friendly APIs](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis).
 
 ```go
-client := yamusic.NewClient()
+package main
 
-// list all genres
-genres, _, err := client.Genres().List(context.Background())
-if err != nil {
-    log.Fatal(err)
-}
+import (
+    "github.com/rubyist/circuitbreaker"
+)
 
-// search for artists
-artists, _, err := client.Search().Artists(context.Background(), "Oxxymiron", nil)
-if err != nil {
-    log.Fatal(err)
+func main() {
+    // constructing http client with circuit breaker
+    // it implements yamusic.Doer interface
+    circuitClient := circuit.NewHTTPClient(time.Second * 5, 10, nil)
+    client := yamusic.NewClient(
+        // if you want http client with circuit breaker
+        yamusic.HTTPClient(circuitClient),
+        // provide user_id and access_token (needed by some methods)
+        yamusic.AccessToken(100, "some_access_token"),
+    )
+    // list all genres
+    genres, resp, err := client.Genres().List(context.Background())
+    if err != nil {
+        log.Fatal(err)
+    }
+    // resp is general type *http.Response
+    if resp.StatusCode != http.StatusOK {
+        log.Fatal("http status is not 200")
+    }
+    log.Println("Genres: ", genres)
+    // create new public playlist. Need access token
+    createdPlaylist, _, err = client.Playlists().Create(context.Background(), "New Playlist", true)
+    if err != nil {
+        log.Fatal(err)
+    }
+    log.Println("Created playlist: ", createdPlaylist)
 }
 ```
 

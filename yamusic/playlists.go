@@ -109,8 +109,8 @@ type (
 			} `json:"tracks"`
 		} `json:"result"`
 	}
-	// PlaylistsGetByKinds describes get user's playlists by kinds response
-	PlaylistsGetByKinds struct {
+	// PlaylistsGetByKindsResp describes get user's playlists by kinds response
+	PlaylistsGetByKindsResp struct {
 		InvocationInfo InvocationInfo `json:"invocationInfo"`
 		Error          Error          `json:"error"`
 		Result         []struct {
@@ -267,7 +267,7 @@ func (s *PlaylistsService) GetByKinds(
 	ctx context.Context,
 	userID int,
 	opts *PlaylistsGetByKindOptions,
-) (*PlaylistsGetByKinds, *http.Response, error) {
+) (*PlaylistsGetByKindsResp, *http.Response, error) {
 	if userID == 0 {
 		userID = s.client.userID
 	}
@@ -293,7 +293,7 @@ func (s *PlaylistsService) GetByKinds(
 		return nil, nil, err
 	}
 
-	playlists := new(PlaylistsGetByKinds)
+	playlists := new(PlaylistsGetByKindsResp)
 	resp, err := s.client.Do(ctx, req, playlists)
 	return playlists, resp, err
 }

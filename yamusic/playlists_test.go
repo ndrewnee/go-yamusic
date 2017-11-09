@@ -69,7 +69,7 @@ func TestPlaylistsService_GetByKinds(t *testing.T) {
 	setup()
 	defer teardown()
 
-	want := &PlaylistsGetByKinds{}
+	want := &PlaylistsGetByKindsResp{}
 	want.InvocationInfo.ReqID = "Playlists.GetByKinds"
 
 	kind1 := 101
