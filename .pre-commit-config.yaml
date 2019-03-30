@@ -1,16 +1,14 @@
-- repo: git://github.com/pre-commit/pre-commit-hooks
-  sha: v1.1.0
-  hooks:
-    - id: trailing-whitespace
-    - id: end-of-file-fixer
-    - id: check-yaml
-    - id: check-json
-    - id: check-merge-conflict
+repos:
+  - repo: git://github.com/pre-commit/pre-commit-hooks
+    rev: v2.1.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
 
-- repo: git://github.com/dnephin/pre-commit-golang
-  sha: HEAD
-  hooks:
-    - id: go-fmt
-    - id: go-vet
-    - id: go-lint
-    - id: gometalinter
+  - repo: git://github.com/dnephin/pre-commit-golang
+    rev: v0.3.3
+    hooks:
+      - id: go-fmt
+      - id: golangci-lint
