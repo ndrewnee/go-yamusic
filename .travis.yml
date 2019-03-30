@@ -1,11 +1,7 @@
 language: go
 sudo: false
 go:
-  - 1.9.x
-  - 1.8.x
-  - 1.7.x
-  - tip
-  - master
+  - 1.x
 before_install:
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
