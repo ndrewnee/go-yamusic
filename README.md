@@ -29,6 +29,7 @@ package main
 
 import (
     "github.com/rubyist/circuitbreaker"
+    "github.com/ndrewnee/go-yamusic/yamusic"
 )
 
 func main() {
