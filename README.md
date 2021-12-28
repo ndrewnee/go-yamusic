@@ -28,8 +28,12 @@ Using [functional options for friendly APIs](https://dave.cheney.net/2014/10/17/
 package main
 
 import (
-    "github.com/rubyist/circuitbreaker"
     "github.com/ndrewnee/go-yamusic/yamusic"
+    "github.com/rubyist/circuitbreaker"
+    "context"
+    "log"
+    "net/http"
+    "time"
 )
 
 func main() {
@@ -53,7 +57,7 @@ func main() {
     }
     log.Println("Genres: ", genres)
     // create new public playlist. Need access token
-    createdPlaylist, _, err = client.Playlists().Create(context.Background(), "New Playlist", true)
+    createdPlaylist, _, err := client.Playlists().Create(context.Background(), "New Playlist", true)
     if err != nil {
         log.Fatal(err)
     }
