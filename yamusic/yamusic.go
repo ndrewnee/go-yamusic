@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -29,6 +30,8 @@ type (
 		// Access token to Yandex.Music API
 		accessToken string
 		userID      int
+		// Debug sets should library print debug messages or not
+		Debug bool
 		// Services
 		genres    *GenresService
 		search    *SearchService
@@ -36,6 +39,10 @@ type (
 		feed      *FeedService
 		playlists *PlaylistsService
 	}
+)
+
+var (
+	debl = log.New(os.Stdout, "[debug]\t", log.Ldate|log.Ltime|log.Lshortfile)
 )
 
 // NewClient returns a new API client.
@@ -161,13 +168,6 @@ func (c *Client) Do(
 		return nil, err
 	}
 
-	defer func() {
-		closeErr := resp.Body.Close()
-		if closeErr != nil {
-			log.Println("close response body error: ", closeErr)
-		}
-	}()
-
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
@@ -175,7 +175,15 @@ func (c *Client) Do(
 				return nil, err
 			}
 		} else {
-			err = json.NewDecoder(resp.Body).Decode(v)
+			dat, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewReader(dat))
+			if c.Debug {
+				debl.Println("Got empty")
+			}
+			err = json.Unmarshal(dat, v)
 			if err == io.EOF {
 				err = nil // ignore EOF errors caused by empty response body
 			}
