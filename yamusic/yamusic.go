@@ -42,7 +42,7 @@ type (
 )
 
 var (
-	deblog = log.New(os.Stdout, "[debug]\t", log.Ldate|log.Ltime|log.Lshortfile)
+	deblog = log.New(os.Stdout, "[DEBUG]\t", log.Ldate|log.Ltime|log.Lshortfile)
 )
 
 // NewClient returns a new API client.
