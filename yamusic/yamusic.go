@@ -43,7 +43,7 @@ type (
 )
 
 var (
-	debl = log.New(os.Stdout, "[debug]\t", log.Ldate|log.Ltime|log.Lshortfile)
+	deblog = log.New(os.Stdout, "[DEBUG]\t", log.Ldate|log.Ltime|log.Lshortfile)
 )
 
 // NewClient returns a new API client.
@@ -182,11 +182,11 @@ func (c *Client) Do(
 				return nil, err
 			}
 			resp.Body = io.NopCloser(bytes.NewReader(dat))
-			if c.Debug {
-				debl.Println("Got empty")
-			}
 			err = json.Unmarshal(dat, v)
 			if err == io.EOF {
+				if c.Debug {
+					deblog.Println("Got empty")
+				}
 				err = nil // ignore EOF errors caused by empty response body
 			}
 		}
