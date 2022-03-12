@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"encoding/xml"
 	"io"
 	"log"
 	"net/http"
@@ -188,6 +189,8 @@ func (c *Client) Do(
 					deblog.Println("Got empty")
 				}
 				err = nil // ignore EOF errors caused by empty response body
+			} else if err != nil {
+				err = xml.Unmarshal(dat, v)
 			}
 		}
 	}
