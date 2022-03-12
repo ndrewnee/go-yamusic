@@ -198,6 +198,11 @@ func (c *Client) Do(
 	return resp, err
 }
 
+// SetUserID sets user's id in client
+func (c *Client) SetUserID(nID int) {
+	c.userID = nID
+}
+
 // UserID returns id of authorized user. If wasn't authorized returns 0.
 func (c *Client) UserID() int {
 	return c.userID
