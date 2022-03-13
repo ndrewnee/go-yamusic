@@ -128,13 +128,6 @@ type (
 		Region  string   `xml:"region"`
 		S       string   `xml:"s"`
 	}
-	TrackLikeResp struct {
-		InvocationInfo InvocationInfo `json:"invocationInfo"`
-		Error          Error          `json:"error"`
-		Result         struct {
-			Revision int `json:"revision"`
-		} `json:"result"`
-	}
 )
 
 type TrackError string
@@ -211,58 +204,4 @@ func (t *TracksService) GetDownloadURL(ctx context.Context, id int) (string, err
 		dlInfo.TS, dlInfo.Path,
 	)
 	return uri, nil
-}
-
-func (t *TracksService) likeOrDis(
-	ctx context.Context,
-	mode string,
-	ids []int,
-	remove bool,
-	userID int,
-) (*TrackLikeResp, *http.Response, error) {
-	if userID == 0 {
-		userID = t.client.userID
-	}
-	action := "add-multiple"
-	if remove {
-		action = "remove"
-	}
-	uri := fmt.Sprintf(
-		"%s/users/%d/%slikes/tracks/%s",
-		t.client.baseURL, userID, mode, action,
-	)
-
-	var strids string
-	for i, id := range ids {
-		strids += strconv.Itoa(id)
-		if i < len(ids)-1 {
-			strids += ","
-		}
-	}
-	form := url.Values{}
-	form.Set("track-ids", strids)
-
-	req, err := t.client.NewRequest(http.MethodPost, uri, form)
-
-	lresp := new(TrackLikeResp)
-	resp, err := t.client.Do(ctx, req, &lresp)
-	return lresp, resp, err
-}
-
-func (t *TracksService) Like(
-	ctx context.Context,
-	ids []int,
-	remove bool,
-	userID int,
-) (*TrackLikeResp, *http.Response, error) {
-	return t.likeOrDis(ctx, "", ids, remove, userID)
-}
-
-func (t *TracksService) Dislike(
-	ctx context.Context,
-	ids []int,
-	remove bool,
-	userID int,
-) (*TrackLikeResp, *http.Response, error) {
-	return t.likeOrDis(ctx, "dis", ids, remove, userID)
 }
