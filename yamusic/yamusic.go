@@ -40,7 +40,6 @@ type (
 		feed      *FeedService
 		playlists *PlaylistsService
 		tracks    *TracksService
-		likes     *LikesService
 	}
 )
 
@@ -68,7 +67,6 @@ func NewClient(options ...func(*Client)) *Client {
 	c.feed = &FeedService{client: c}
 	c.playlists = &PlaylistsService{client: c}
 	c.tracks = &TracksService{client: c}
-	c.likes = &LikesService{client: c}
 
 	return c
 }
@@ -238,11 +236,6 @@ func (c *Client) Playlists() *PlaylistsService {
 // Tracks returns feed service
 func (c *Client) Tracks() *TracksService {
 	return c.tracks
-}
-
-// Likes returns likes service
-func (c *Client) Likes() *LikesService {
-	return c.likes
 }
 
 // General types

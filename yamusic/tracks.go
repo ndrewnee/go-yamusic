@@ -7,8 +7,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
 	"time"
 )
 
