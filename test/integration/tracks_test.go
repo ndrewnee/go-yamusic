@@ -7,6 +7,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/assert"
 	"net/http"
+	"strconv"
 	"testing"
 )
 
@@ -19,10 +20,10 @@ func TestTracks(t *testing.T) {
 		assert.NotZero(t, result)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		assert.NotZero(t, result.Result)
-		assert.Equal(t, result.Result[0].ID, kind)
+		assert.Equal(t, result.Result[0].ID, strconv.Itoa(kind))
 	})
 	t.Run("Get track download URL", func(t *testing.T) {
-		url, err := client.Tracks.Get(ctx, kind)
+		url, err := client.Tracks().GetDownloadURL(ctx, kind)
 		assert.NoError(t, err)
 		assert.NotZero(t, url)
 	})

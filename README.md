@@ -78,3 +78,5 @@ Running integration tests:
 ```sh
 go test -tags=integration ./test/integration/
 ```
+
+Note that you should set `YANDEX_USER_ID` and `YANDEX_ACCESS_TOKEN` enviroment variables.
