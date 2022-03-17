@@ -134,6 +134,7 @@ func (te TrackError) Error() string { return string(te) }
 
 var (
 	ErrNilDownloadInfoResp = TrackError("got nil download info resp pointer")
+	ErrNilDownloadInfo     = TrackError("got nil download info pointer")
 	ErrZeroResultLen       = TrackError("len of download inf response's result field is zero")
 )
 
@@ -194,11 +195,15 @@ func (t *TracksService) GetDownloadURL(ctx context.Context, id int) (string, err
 	if err != nil {
 		return "", err
 	}
+	if dlInfo == nil {
+		return "", ErrNilDownloadInfo
+	}
+	// a bit of magic
 	var sign = md5.Sum([]byte("XGRlBW9FXlekgbPrRHuSiA" + dlInfo.Path[1:] + dlInfo.S))
 	uri := fmt.Sprintf(
 		"https://%s/get-mp3/%s/%s%s",
 		dlInfo.Host,
-		hex.EncodeToString(sign[:15]), // from MarshalX/yandex_music_api
+		hex.EncodeToString(sign[:]),
 		dlInfo.TS, dlInfo.Path,
 	)
 	return uri, nil

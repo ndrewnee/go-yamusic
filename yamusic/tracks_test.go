@@ -100,7 +100,7 @@ func TestTracksSevice_GetDownloadInfo(t *testing.T) {
 	want2 := &DownloadInfo{}
 
 	mux.HandleFunc(
-		want1.Result[len(want1.Result)-1].DownloadInfoURL,
+		want1.Result[0].DownloadInfoURL,
 		func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodGet, r.Method)
 			assert.Equal(t, "OAuth "+accessToken, r.Header.Get("Authorization"))
