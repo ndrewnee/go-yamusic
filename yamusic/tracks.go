@@ -199,8 +199,6 @@ func (t *TracksService) GetDownloadURL(ctx context.Context, id int) (string, err
 	}
 	if dlInfo == nil {
 		return "", ErrNilDownloadInfo
-	} else if dlInfo.Path == nil {
-		return "", ErrNilPath
 	} else if len(dlInfo.Path) == 0 {
 		return "", ErrEmptyPath
 	}
