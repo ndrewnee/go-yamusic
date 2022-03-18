@@ -135,6 +135,8 @@ func (te TrackError) Error() string { return string(te) }
 var (
 	ErrNilDownloadInfoResp = TrackError("got nil download info resp pointer")
 	ErrNilDownloadInfo     = TrackError("got nil download info pointer")
+	ErrNilPath             = TrackError("got nil path")
+	ErrEmptyPath           = TrackError("got empty path")
 	ErrZeroResultLen       = TrackError("len of download inf response's result field is zero")
 )
 
@@ -197,9 +199,14 @@ func (t *TracksService) GetDownloadURL(ctx context.Context, id int) (string, err
 	}
 	if dlInfo == nil {
 		return "", ErrNilDownloadInfo
+	} else if dlInfo.Path == nil {
+		return "", ErrNilPath
+	} else if len(dlInfo.Path) == 0 {
+		return "", ErrEmptyPath
 	}
 	// a bit of magic
-	var sign = md5.Sum([]byte("XGRlBW9FXlekgbPrRHuSiA" + dlInfo.Path[1:] + dlInfo.S))
+	const magicString = "XGRlBW9FXlekgbPrRHuSiA"
+	var sign = md5.Sum([]byte(magicString + dlInfo.Path[1:] + dlInfo.S))
 	uri := fmt.Sprintf(
 		"https://%s/get-mp3/%s/%s%s",
 		dlInfo.Host,
