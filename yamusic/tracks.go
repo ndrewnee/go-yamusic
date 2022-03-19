@@ -203,8 +203,8 @@ func (t *TracksService) GetDownloadURL(ctx context.Context, id int) (string, err
 		return "", ErrEmptyPath
 	}
 	// a bit of magic
-	const magicString = "XGRlBW9FXlekgbPrRHuSiA"
-	var sign = md5.Sum([]byte(magicString + dlInfo.Path[1:] + dlInfo.S))
+	const signPrefix = "XGRlBW9FXlekgbPrRHuSiA"
+	var sign = md5.Sum([]byte(signPrefix + dlInfo.Path[1:] + dlInfo.S))
 	uri := fmt.Sprintf(
 		"https://%s/get-mp3/%s/%s%s",
 		dlInfo.Host,
