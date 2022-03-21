@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"encoding/xml"
 	"io"
 	"log"
 	"net/http"
@@ -38,6 +39,7 @@ type (
 		account   *AccountService
 		feed      *FeedService
 		playlists *PlaylistsService
+		tracks    *TracksService
 	}
 )
 
@@ -64,6 +66,7 @@ func NewClient(options ...func(*Client)) *Client {
 	c.account = &AccountService{client: c}
 	c.feed = &FeedService{client: c}
 	c.playlists = &PlaylistsService{client: c}
+	c.tracks = &TracksService{client: c}
 
 	return c
 }
@@ -186,11 +189,18 @@ func (c *Client) Do(
 					deblog.Println("Got empty")
 				}
 				err = nil // ignore EOF errors caused by empty response body
+			} else if err != nil {
+				err = xml.Unmarshal(dat, v)
 			}
 		}
 	}
 
 	return resp, err
+}
+
+// SetUserID sets user's id in client
+func (c *Client) SetUserID(nID int) {
+	c.userID = nID
 }
 
 // UserID returns id of authorized user. If wasn't authorized returns 0.
@@ -218,9 +228,14 @@ func (c *Client) Feed() *FeedService {
 	return c.feed
 }
 
-// Playlists returns feed service
+// Playlists returns playlists service
 func (c *Client) Playlists() *PlaylistsService {
 	return c.playlists
+}
+
+// Tracks returns feed service
+func (c *Client) Tracks() *TracksService {
+	return c.tracks
 }
 
 // General types
