@@ -165,6 +165,7 @@ type (
 		IsBanner           bool           `json:"isBanner"`
 		IsPremiere         bool           `json:"isPremiere"`
 		Title              string         `json:"title"`
+		Description        string         `json:"description"`
 		Visibility         string         `json:"visibility"`
 		OgImage            string         `json:"ogImage"`
 		Created            time.Time      `json:"created"`
