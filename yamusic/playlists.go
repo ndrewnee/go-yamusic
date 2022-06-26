@@ -23,90 +23,105 @@ type (
 		Error          Error             `json:"error"`
 		Result         []PlaylistsResult `json:"result"`
 	}
+
+	Artist struct {
+		ID       int    `json:"id"`
+		Name     string `json:"name"`
+		Various  bool   `json:"various"`
+		Composer bool   `json:"composer"`
+		Cover    struct {
+			Type   string `json:"type"`
+			Prefix string `json:"prefix"`
+			URI    string `json:"uri"`
+		} `json:"cover"`
+		Genres []interface{} `json:"genres"`
+	}
+
+	Artists []Artist
+
+	Album struct {
+		ID                       int           `json:"id"`
+		Title                    string        `json:"title"`
+		Year                     int           `json:"year"`
+		ReleaseDate              time.Time     `json:"releaseDate"`
+		CoverURI                 string        `json:"coverUri"`
+		OgImage                  string        `json:"ogImage"`
+		Genre                    string        `json:"genre"`
+		Buy                      []interface{} `json:"buy"`
+		TrackCount               int           `json:"trackCount"`
+		Recent                   bool          `json:"recent"`
+		VeryImportant            bool          `json:"veryImportant"`
+		Available                bool          `json:"available"`
+		AvailableForPremiumUsers bool          `json:"availableForPremiumUsers"`
+		AvailableForMobile       bool          `json:"availableForMobile"`
+		AvailablePartially       bool          `json:"availablePartially"`
+		Bests                    []int         `json:"bests"`
+		Artists                  []struct {
+			ID       int    `json:"id"`
+			Name     string `json:"name"`
+			Various  bool   `json:"various"`
+			Composer bool   `json:"composer"`
+			Cover    struct {
+				Type   string `json:"type"`
+				Prefix string `json:"prefix"`
+				URI    string `json:"uri"`
+			} `json:"cover"`
+			Genres []interface{} `json:"genres"`
+		} `json:"artists"`
+		Labels []struct {
+			ID          int    `json:"id"`
+			Name        string `json:"name"`
+			Description string `json:"description"`
+			Image       string `json:"image"`
+		} `json:"labels"`
+		TrackPosition struct {
+			Volume int `json:"volume"`
+			Index  int `json:"index"`
+		} `json:"trackPosition"`
+	}
+
+	Albums []Album
+
+	Track struct {
+		DurationMs               int    `json:"durationMs"`
+		FileSize                 int    `json:"fileSize"`
+		Available                bool   `json:"available"`
+		AvailableForPremiumUsers bool   `json:"availableForPremiumUsers"`
+		LyricsAvailable          bool   `json:"lyricsAvailable"`
+		ID                       string `json:"id"`
+		RealID                   string `json:"realId"`
+		Title                    string `json:"title"`
+		StorageDir               string `json:"storageDir"`
+		CoverURI                 string `json:"coverUri"`
+		OgImage                  string `json:"ogImage"`
+		Major                    struct {
+			ID   int    `json:"id"`
+			Name string `json:"name"`
+		} `json:"major"`
+		Normalization struct {
+			Gain float64 `json:"gain"`
+			Peak int     `json:"peak"`
+		} `json:"normalization"`
+		Artists Artists `json:"artists"`
+		Albums  Albums  `json:"albums"`
+	}
+
+	TrackFull struct {
+		ID        int       `json:"id"`
+		Timestamp time.Time `json:"timestamp"`
+		Recent    bool      `json:"recent"`
+		Track     Track     `json:"track"`
+	}
+
+	Tracks []TrackFull
+
 	// PlaylistsGetResp describes get user's playlist by kind response
 	PlaylistsGetResp struct {
 		InvocationInfo InvocationInfo `json:"invocationInfo"`
 		Error          Error          `json:"error"`
 		Result         struct {
 			PlaylistsResult
-			Tracks []struct {
-				ID        int       `json:"id"`
-				Timestamp time.Time `json:"timestamp"`
-				Recent    bool      `json:"recent"`
-				Track     struct {
-					DurationMs               int    `json:"durationMs"`
-					FileSize                 int    `json:"fileSize"`
-					Available                bool   `json:"available"`
-					AvailableForPremiumUsers bool   `json:"availableForPremiumUsers"`
-					LyricsAvailable          bool   `json:"lyricsAvailable"`
-					ID                       string `json:"id"`
-					RealID                   string `json:"realId"`
-					Title                    string `json:"title"`
-					StorageDir               string `json:"storageDir"`
-					CoverURI                 string `json:"coverUri"`
-					OgImage                  string `json:"ogImage"`
-					Major                    struct {
-						ID   int    `json:"id"`
-						Name string `json:"name"`
-					} `json:"major"`
-					Normalization struct {
-						Gain float64 `json:"gain"`
-						Peak int     `json:"peak"`
-					} `json:"normalization"`
-					Artists []struct {
-						ID       int    `json:"id"`
-						Name     string `json:"name"`
-						Various  bool   `json:"various"`
-						Composer bool   `json:"composer"`
-						Cover    struct {
-							Type   string `json:"type"`
-							Prefix string `json:"prefix"`
-							URI    string `json:"uri"`
-						} `json:"cover"`
-						Genres []interface{} `json:"genres"`
-					} `json:"artists"`
-					Albums []struct {
-						ID                       int           `json:"id"`
-						Title                    string        `json:"title"`
-						Year                     int           `json:"year"`
-						ReleaseDate              time.Time     `json:"releaseDate"`
-						CoverURI                 string        `json:"coverUri"`
-						OgImage                  string        `json:"ogImage"`
-						Genre                    string        `json:"genre"`
-						Buy                      []interface{} `json:"buy"`
-						TrackCount               int           `json:"trackCount"`
-						Recent                   bool          `json:"recent"`
-						VeryImportant            bool          `json:"veryImportant"`
-						Available                bool          `json:"available"`
-						AvailableForPremiumUsers bool          `json:"availableForPremiumUsers"`
-						AvailableForMobile       bool          `json:"availableForMobile"`
-						AvailablePartially       bool          `json:"availablePartially"`
-						Bests                    []int         `json:"bests"`
-						Artists                  []struct {
-							ID       int    `json:"id"`
-							Name     string `json:"name"`
-							Various  bool   `json:"various"`
-							Composer bool   `json:"composer"`
-							Cover    struct {
-								Type   string `json:"type"`
-								Prefix string `json:"prefix"`
-								URI    string `json:"uri"`
-							} `json:"cover"`
-							Genres []interface{} `json:"genres"`
-						} `json:"artists"`
-						Labels []struct {
-							ID          int    `json:"id"`
-							Name        string `json:"name"`
-							Description string `json:"description"`
-							Image       string `json:"image"`
-						} `json:"labels"`
-						TrackPosition struct {
-							Volume int `json:"volume"`
-							Index  int `json:"index"`
-						} `json:"trackPosition"`
-					} `json:"albums"`
-				} `json:"track"`
-			} `json:"tracks"`
+			Tracks Tracks `json:"tracks"`
 		} `json:"result"`
 	}
 	// PlaylistsGetByKindsResp describes get user's playlists by kinds response
