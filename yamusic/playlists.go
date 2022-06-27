@@ -262,6 +262,26 @@ func (s *PlaylistsService) Get(
 	return playlist, resp, err
 }
 
+func (s *PlaylistsService) GetByUserIDAndKind(
+	ctx context.Context,
+	userID string,
+	kind int,
+) (*PlaylistsGetResp, *http.Response, error) {
+	if len(userID) == 0 {
+		userID = strconv.Itoa(s.client.userID)
+	}
+
+	uri := fmt.Sprintf("users/%v/playlists/%v", userID, kind)
+	req, err := s.client.NewRequest(http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	playlist := new(PlaylistsGetResp)
+	resp, err := s.client.Do(ctx, req, playlist)
+	return playlist, resp, err
+}
+
 type (
 	// PlaylistsGetByKindOptions options for GetByKinds method
 	PlaylistsGetByKindOptions struct {
