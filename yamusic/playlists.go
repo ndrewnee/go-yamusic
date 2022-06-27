@@ -39,6 +39,15 @@ type (
 
 	Artists []Artist
 
+	Label struct {
+		ID          int    `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Image       string `json:"image"`
+	}
+
+	Labels []Label
+
 	Album struct {
 		ID                       int           `json:"id"`
 		Title                    string        `json:"title"`
@@ -56,25 +65,9 @@ type (
 		AvailableForMobile       bool          `json:"availableForMobile"`
 		AvailablePartially       bool          `json:"availablePartially"`
 		Bests                    []int         `json:"bests"`
-		Artists                  []struct {
-			ID       int    `json:"id"`
-			Name     string `json:"name"`
-			Various  bool   `json:"various"`
-			Composer bool   `json:"composer"`
-			Cover    struct {
-				Type   string `json:"type"`
-				Prefix string `json:"prefix"`
-				URI    string `json:"uri"`
-			} `json:"cover"`
-			Genres []interface{} `json:"genres"`
-		} `json:"artists"`
-		Labels []struct {
-			ID          int    `json:"id"`
-			Name        string `json:"name"`
-			Description string `json:"description"`
-			Image       string `json:"image"`
-		} `json:"labels"`
-		TrackPosition struct {
+		Artists                  Artists       `json:"artists"`
+		Labels                   Labels        `json:"labels"`
+		TrackPosition            struct {
 			Volume int `json:"volume"`
 			Index  int `json:"index"`
 		} `json:"trackPosition"`
