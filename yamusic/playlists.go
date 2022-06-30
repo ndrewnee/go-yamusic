@@ -51,6 +51,7 @@ type (
 	Album struct {
 		ID                       int           `json:"id"`
 		Title                    string        `json:"title"`
+		Type                     *string       `json:"type,omitempty"`
 		Year                     int           `json:"year"`
 		ReleaseDate              time.Time     `json:"releaseDate"`
 		CoverURI                 string        `json:"coverUri"`
