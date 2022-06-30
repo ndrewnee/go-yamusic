@@ -52,6 +52,7 @@ type (
 		ID                       int           `json:"id"`
 		Title                    string        `json:"title"`
 		Type                     *string       `json:"type,omitempty"`
+		ContentWarning           *string       `json:"contentWarning,omitempty"`
 		Year                     int           `json:"year"`
 		ReleaseDate              time.Time     `json:"releaseDate"`
 		CoverURI                 string        `json:"coverUri"`
