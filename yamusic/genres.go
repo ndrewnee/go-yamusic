@@ -44,8 +44,7 @@ type (
 					FullTitle string `json:"fullTitle"`
 				} `json:"ru"`
 			} `json:"titles"`
-			Images struct {
-			} `json:"images"`
+			Images    struct{} `json:"images"`
 			RadioIcon struct {
 				BackgroundColor string `json:"backgroundColor"`
 				ImageURL        string `json:"imageUrl"`
@@ -95,7 +94,6 @@ type (
 func (s *GenresService) List(
 	ctx context.Context,
 ) (*GenresListResp, *http.Response, error) {
-
 	req, err := s.client.NewRequest(http.MethodGet, "genres", nil)
 	if err != nil {
 		return nil, nil, err

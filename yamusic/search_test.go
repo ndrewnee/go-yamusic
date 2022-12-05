@@ -38,7 +38,8 @@ func testSearch(t *testing.T, searchType string, searchFunc func(
 	ctx context.Context,
 	query string,
 	opts *SearchOptions,
-) (*SearchResp, *http.Response, error)) {
+) (*SearchResp, *http.Response, error),
+) {
 	want := &SearchResp{}
 	want.InvocationInfo.ReqID = searchType
 

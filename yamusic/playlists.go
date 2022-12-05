@@ -350,7 +350,6 @@ func (s *PlaylistsService) Rename(
 	kind int,
 	newName string,
 ) (*PlaylistsRenameResp, *http.Response, error) {
-
 	uri := fmt.Sprintf("users/%v/playlists/%v/name", s.client.userID, kind)
 
 	form := url.Values{}
@@ -374,7 +373,6 @@ func (s *PlaylistsService) Create(
 	title string,
 	isPublic bool,
 ) (*PlaylistsCreateResp, *http.Response, error) {
-
 	var visibility string
 	if isPublic {
 		visibility = "public"
@@ -403,7 +401,6 @@ func (s *PlaylistsService) Delete(
 	ctx context.Context,
 	kind int,
 ) (*PlaylistsDeleteResp, *http.Response, error) {
-
 	uri := fmt.Sprintf("users/%v/playlists/%v/delete", s.client.userID, kind)
 	req, err := s.client.NewRequest(http.MethodPost, uri, nil)
 	if err != nil {

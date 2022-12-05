@@ -39,7 +39,8 @@ func testSearch(t *testing.T, searchFunc func(
 	ctx context.Context,
 	query string,
 	opts *yamusic.SearchOptions,
-) (*yamusic.SearchResp, *http.Response, error)) *yamusic.SearchResp {
+) (*yamusic.SearchResp, *http.Response, error),
+) *yamusic.SearchResp {
 	ctx := context.Background()
 	result, resp, err := searchFunc(ctx, "Oxxymiron", nil)
 

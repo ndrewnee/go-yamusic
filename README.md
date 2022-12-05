@@ -1,10 +1,7 @@
 # yamusic
 
-[![GoDoc](https://godoc.org/github.com/ndrewnee/go-yamusic/yamusic?status.svg)](https://godoc.org/github.com/ndrewnee/go-yamusic/yamusic)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ndrewnee/go-yamusic)](https://goreportcard.com/report/github.com/ndrewnee/go-yamusic)
-[![Build Status](https://travis-ci.org/ndrewnee/go-yamusic.svg?branch=master)](https://travis-ci.org/ndrewnee/go-yamusic)
-[![Coverage Status](https://coveralls.io/repos/github/ndrewnee/go-yamusic/badge.svg)](https://coveralls.io/github/ndrewnee/go-yamusic)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/ndrewnee/go-yamusic/issues)
+[![Go Reference](https://pkg.go.dev/badge/github.com/ndrewnee/go-yamusic/yamusic/yamusic.svg)](https://pkg.go.dev/github.com/ndrewnee/go-yamusic/yamusic)
+[![Go](https://github.com/ndrewnee/go-yamusic/actions/workflows/go.yml/badge.svg?branch=master)](https://github.com/ndrewnee/go-yamusic/actions/workflows/go.yml)
 
 ## Description
 
@@ -64,18 +61,34 @@ func main() {
 }
 ```
 
-## Tests
+## 👷 Build
 
-Running unit tests:
+Build package
 
-```sh
-go test ./yamusic/
+```bash
+make build
 ```
 
-Running integration tests:
+## 🧪 Testing
+
+Run unit tests:
 
 ```sh
-go test -tags=integration ./test/integration/
+make test
 ```
+
+Run integration tests:
 
 Note that you should set `YANDEX_USER_ID` and `YANDEX_ACCESS_TOKEN` environment variables.
+
+```sh
+make test_integration
+```
+
+## 🖍 Lint
+
+Run linters
+
+```bash
+make lint
+```

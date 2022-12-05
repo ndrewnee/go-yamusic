@@ -14,9 +14,9 @@ type (
 
 const (
 	searchTypeArtist searchType = "artist"
-	searchTypeAlbum             = "album"
-	searchTypeTrack             = "track"
-	searchTypeAll               = "all"
+	searchTypeAlbum  searchType = "album"
+	searchTypeTrack  searchType = "track"
+	searchTypeAll    searchType = "all"
 )
 
 type (
@@ -213,7 +213,6 @@ func (s *SearchService) Artists(
 	query string,
 	opts *SearchOptions,
 ) (*SearchResp, *http.Response, error) {
-
 	return s.search(ctx, searchTypeArtist, query, opts)
 }
 
@@ -223,7 +222,6 @@ func (s *SearchService) Tracks(
 	query string,
 	opts *SearchOptions,
 ) (*SearchResp, *http.Response, error) {
-
 	return s.search(ctx, searchTypeTrack, query, opts)
 }
 
@@ -233,7 +231,6 @@ func (s *SearchService) Albums(
 	query string,
 	opts *SearchOptions,
 ) (*SearchResp, *http.Response, error) {
-
 	return s.search(ctx, searchTypeAlbum, query, opts)
 }
 
@@ -243,7 +240,6 @@ func (s *SearchService) All(
 	query string,
 	opts *SearchOptions,
 ) (*SearchResp, *http.Response, error) {
-
 	return s.search(ctx, searchTypeAll, query, opts)
 }
 
@@ -253,7 +249,6 @@ func (s *SearchService) search(
 	query string,
 	opts *SearchOptions,
 ) (*SearchResp, *http.Response, error) {
-
 	if opts == nil {
 		opts = &SearchOptions{}
 	}

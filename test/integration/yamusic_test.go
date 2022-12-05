@@ -3,14 +3,13 @@
 package integration
 
 import (
-	"github.com/ndrewnee/go-yamusic/yamusic"
 	"os"
 	"strconv"
+
+	"github.com/ndrewnee/go-yamusic/yamusic"
 )
 
-var (
-	client *yamusic.Client
-)
+var client *yamusic.Client
 
 func init() {
 	var userID int

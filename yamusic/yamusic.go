@@ -43,9 +43,7 @@ type (
 	}
 )
 
-var (
-	deblog = log.New(os.Stdout, "[DEBUG]\t", log.Ldate|log.Ltime|log.Lshortfile)
-)
+var deblog = log.New(os.Stdout, "[DEBUG]\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 // NewClient returns a new API client.
 // If a nil httpClient is provided, http.DefaultClient will be used.
@@ -114,7 +112,6 @@ func (c *Client) NewRequest(
 	urlStr string,
 	body interface{},
 ) (*http.Request, error) {
-
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
@@ -163,7 +160,6 @@ func (c *Client) Do(
 	req *http.Request,
 	v interface{},
 ) (*http.Response, error) {
-
 	req = req.WithContext(ctx)
 
 	resp, err := c.client.Do(req)
@@ -188,9 +184,11 @@ func (c *Client) Do(
 				if c.Debug {
 					deblog.Println("Got empty")
 				}
-				err = nil // ignore EOF errors caused by empty response body
+				// Ignore EOF errors caused by empty response body.
+				err = nil //nolint:ineffassign
 			} else if err != nil {
-				err = xml.Unmarshal(dat, v)
+				// Try parse XML if it's not JSON.
+				err = xml.Unmarshal(dat, v) //nolint:ineffassign,staticcheck
 			}
 		}
 	}

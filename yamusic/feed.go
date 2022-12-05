@@ -368,7 +368,6 @@ type (
 func (s *FeedService) Get(
 	ctx context.Context,
 ) (*FeedResp, *http.Response, error) {
-
 	req, err := s.client.NewRequest(http.MethodGet, "feed", nil)
 	if err != nil {
 		return nil, nil, err
