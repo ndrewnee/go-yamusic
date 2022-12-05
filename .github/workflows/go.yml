@@ -30,6 +30,9 @@ jobs:
       
     - name: Integration test
       run: go test -v -race -tags=integration ./test/integration/
+      env:
+        YANDEX_USER_ID: ${{ secrets.YANDEX_USER_ID }}
+        YANDEX_ACCESS_TOKEN: ${{ secrets.YANDEX_ACCESS_TOKEN }}
       
   golangci-lint:
     name: Lint
