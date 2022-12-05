@@ -101,6 +101,9 @@ func (t *TracksService) GetDownloadInfo(ctx context.Context, id int) (*DownloadI
 	}
 
 	req, err := t.client.NewRequest(http.MethodGet, dlInfoResp.Result[0].DownloadInfoURL, nil)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	dlInfo := new(DownloadInfo)
 	resp, err := t.client.Do(ctx, req, dlInfo)
@@ -120,7 +123,7 @@ func (t *TracksService) GetDownloadURL(ctx context.Context, id int) (string, err
 	}
 	// a bit of magic
 	const signPrefix = "XGRlBW9FXlekgbPrRHuSiA"
-	var sign = md5.Sum([]byte(signPrefix + dlInfo.Path[1:] + dlInfo.S))
+	sign := md5.Sum([]byte(signPrefix + dlInfo.Path[1:] + dlInfo.S))
 	uri := fmt.Sprintf(
 		"https://%s/get-mp3/%s/%s%s",
 		dlInfo.Host,

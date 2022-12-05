@@ -50,7 +50,6 @@ type (
 func (s *AccountService) GetStatus(
 	ctx context.Context,
 ) (*AccountStatusResp, *http.Response, error) {
-
 	req, err := s.client.NewRequest(http.MethodGet, "account/status", nil)
 	if err != nil {
 		return nil, nil, err

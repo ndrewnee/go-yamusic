@@ -4,9 +4,10 @@ package integration
 
 import (
 	"context"
-	"github.com/ndrewnee/go-yamusic/yamusic"
 	"net/http"
 	"testing"
+
+	"github.com/ndrewnee/go-yamusic/yamusic"
 
 	"github.com/stretchr/testify/assert"
 )

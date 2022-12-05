@@ -4,10 +4,11 @@ package integration
 
 import (
 	"context"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestTracks(t *testing.T) {
